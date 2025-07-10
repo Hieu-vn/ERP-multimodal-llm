@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+/env/
+/bin/
+/include/
+/lib/
+/lib64/
+
+# IDEs
+.idea/
+.vscode/
+
+# Operating System
+.DS_Store
+thumbs.db
+
+# Data and Models
+data_preparation/vector_store/
+finetuning/outputs/
+finetuning/finetuned_erp_model/
+
+# Environment variables
+.env
+
+# Batch scripts (optional, if you don't want to track them)
+*.bat

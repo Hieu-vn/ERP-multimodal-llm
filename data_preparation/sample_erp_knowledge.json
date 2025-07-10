@@ -1,0 +1,112 @@
+[
+  {
+    "role": "warehouse_manager",
+    "instruction": "Làm thế nào để kiểm tra tồn kho hiện tại?",
+    "response": "Để kiểm tra tồn kho hiện tại, bạn cần: 1) Đăng nhập vào module Quản lý kho, 2) Vào mục 'Tồn kho', 3) Chọn 'Báo cáo tồn kho', 4) Xem số lượng hiện tại của từng sản phẩm. Bạn cũng có thể lọc theo kho, nhóm sản phẩm hoặc ngày để có thông tin chi tiết hơn."
+  },
+  {
+    "role": "warehouse_manager",
+    "instruction": "Cách tạo phiếu xuất kho mới?",
+    "response": "Để tạo phiếu xuất kho mới: 1) Vào module Quản lý kho, 2) Chọn 'Phiếu xuất kho', 3) Nhấn 'Tạo mới', 4) Điền thông tin: mã phiếu, ngày xuất, kho xuất, 5) Thêm sản phẩm cần xuất với số lượng, 6) Lưu và xác nhận phiếu. Đảm bảo kiểm tra tồn kho trước khi xuất."
+  },
+  {
+    "role": "warehouse_manager",
+    "instruction": "Làm sao để kiểm tra lịch sử nhập xuất kho?",
+    "response": "Để kiểm tra lịch sử nhập xuất kho: 1) Vào module Quản lý kho, 2) Chọn 'Báo cáo', 3) Chọn 'Lịch sử nhập xuất', 4) Thiết lập bộ lọc: kho, thời gian, loại phiếu, 5) Xem danh sách các phiếu nhập/xuất với chi tiết sản phẩm, số lượng, ngày thực hiện."
+  },
+  {
+    "role": "accountant",
+    "instruction": "Cách ghi nhận chi phí trong ERP?",
+    "response": "Để ghi nhận chi phí trong ERP: 1) Vào module Kế toán, 2) Chọn 'Ghi nhận giao dịch', 3) Chọn loại giao dịch 'Chi phí', 4) Điền thông tin: ngày, mô tả, số tiền, tài khoản nợ (chi phí), tài khoản có (tiền mặt/ngân hàng), 5) Lưu giao dịch. Hệ thống sẽ tự động cập nhật sổ cái."
+  },
+  {
+    "role": "accountant",
+    "instruction": "Làm thế nào để tạo báo cáo tài chính?",
+    "response": "Để tạo báo cáo tài chính: 1) Vào module Kế toán, 2) Chọn 'Báo cáo', 3) Chọn loại báo cáo: Bảng cân đối kế toán, Báo cáo kết quả kinh doanh, Báo cáo lưu chuyển tiền tệ, 4) Thiết lập thời gian báo cáo, 5) Xem và xuất báo cáo định dạng PDF/Excel."
+  },
+  {
+    "role": "accountant",
+    "instruction": "Cách xử lý hóa đơn đầu vào?",
+    "response": "Để xử lý hóa đơn đầu vào: 1) Vào module Kế toán, 2) Chọn 'Hóa đơn đầu vào', 3) Nhấn 'Tạo mới', 4) Điền thông tin nhà cung cấp, ngày hóa đơn, số hóa đơn, 5) Thêm các khoản mục chi phí với thuế suất, 6) Hệ thống tự tính thuế GTGT, 7) Lưu và ghi nhận vào sổ sách."
+  },
+  {
+    "role": "hr_manager",
+    "instruction": "Làm thế nào để thêm nhân viên mới?",
+    "response": "Để thêm nhân viên mới: 1) Vào module Nhân sự, 2) Chọn 'Quản lý nhân viên', 3) Nhấn 'Thêm mới', 4) Điền thông tin cá nhân: họ tên, ngày sinh, CMND, địa chỉ, 5) Thông tin công việc: phòng ban, chức vụ, ngày vào làm, mức lương, 6) Tài khoản hệ thống và quyền truy cập, 7) Lưu thông tin nhân viên."
+  },
+  {
+    "role": "hr_manager",
+    "instruction": "Cách tính lương cho nhân viên?",
+    "response": "Để tính lương cho nhân viên: 1) Vào module Nhân sự, 2) Chọn 'Tính lương', 3) Chọn tháng cần tính, 4) Hệ thống tự động tính: lương cơ bản, phụ cấp, thưởng, 5) Trừ các khoản: bảo hiểm, thuế TNCN, 6) Xem bảng lương chi tiết, 7) Phê duyệt và xuất bảng lương."
+  },
+  {
+    "role": "hr_manager",
+    "instruction": "Làm sao để đánh giá hiệu suất nhân viên?",
+    "response": "Để đánh giá hiệu suất nhân viên: 1) Vào module Nhân sự, 2) Chọn 'Đánh giá hiệu suất', 3) Chọn nhân viên và kỳ đánh giá, 4) Điền các tiêu chí đánh giá: hoàn thành công việc, thái độ, sáng tạo, 5) Cho điểm từ 1-5 cho mỗi tiêu chí, 6) Thêm nhận xét và đề xuất, 7) Lưu và gửi cho nhân viên xác nhận."
+  },
+  {
+    "role": "admin",
+    "instruction": "Cách tạo người dùng mới trong hệ thống?",
+    "response": "Để tạo người dùng mới: 1) Vào module Quản trị, 2) Chọn 'Quản lý người dùng', 3) Nhấn 'Thêm người dùng', 4) Điền thông tin: tên đăng nhập, email, họ tên, 5) Gán vai trò và quyền truy cập, 6) Thiết lập mật khẩu ban đầu, 7) Kích hoạt tài khoản. Người dùng sẽ nhận email hướng dẫn đăng nhập lần đầu."
+  },
+  {
+    "role": "admin",
+    "instruction": "Làm thế nào để sao lưu dữ liệu hệ thống?",
+    "response": "Để sao lưu dữ liệu hệ thống: 1) Vào module Quản trị, 2) Chọn 'Sao lưu & Khôi phục', 3) Chọn 'Tạo bản sao lưu', 4) Chọn loại sao lưu: toàn bộ hệ thống hoặc từng module, 5) Thiết lập lịch sao lưu tự động (hàng ngày/tuần), 6) Chọn vị trí lưu trữ, 7) Thực hiện sao lưu và kiểm tra tính toàn vẹn dữ liệu."
+  },
+  {
+    "role": "admin",
+    "instruction": "Cách cấu hình bảo mật hệ thống?",
+    "response": "Để cấu hình bảo mật hệ thống: 1) Vào module Quản trị, 2) Chọn 'Cài đặt bảo mật', 3) Thiết lập chính sách mật khẩu: độ dài tối thiểu, độ phức tạp, thời hạn, 4) Cấu hình xác thực 2 yếu tố (2FA), 5) Thiết lập giới hạn đăng nhập sai, 6) Cấu hình mã hóa dữ liệu, 7) Thiết lập lịch sử truy cập và cảnh báo."
+  },
+  {
+    "role": "sales_manager",
+    "instruction": "Làm thế nào để tạo đơn hàng mới?",
+    "response": "Để tạo đơn hàng mới: 1) Vào module Bán hàng, 2) Chọn 'Đơn hàng', 3) Nhấn 'Tạo đơn hàng', 4) Chọn khách hàng hoặc tạo mới, 5) Thêm sản phẩm với số lượng, đơn giá, 6) Áp dụng chiết khấu nếu có, 7) Chọn phương thức thanh toán, 8) Lưu và xác nhận đơn hàng. Hệ thống sẽ tự động kiểm tra tồn kho."
+  },
+  {
+    "role": "sales_manager",
+    "instruction": "Cách theo dõi doanh số bán hàng?",
+    "response": "Để theo dõi doanh số bán hàng: 1) Vào module Bán hàng, 2) Chọn 'Báo cáo', 3) Chọn 'Báo cáo doanh số', 4) Thiết lập bộ lọc: thời gian, nhân viên, khách hàng, sản phẩm, 5) Xem các chỉ số: tổng doanh thu, số đơn hàng, sản phẩm bán chạy, 6) Xuất báo cáo chi tiết hoặc biểu đồ trực quan."
+  },
+  {
+    "role": "sales_manager",
+    "instruction": "Làm sao để quản lý khách hàng?",
+    "response": "Để quản lý khách hàng: 1) Vào module Bán hàng, 2) Chọn 'Quản lý khách hàng', 3) Xem danh sách khách hàng với thông tin: tên, số điện thoại, email, địa chỉ, 4) Thêm khách hàng mới hoặc cập nhật thông tin, 5) Phân loại khách hàng theo nhóm, 6) Theo dõi lịch sử mua hàng và nợ phải thu, 7) Gửi email marketing và chăm sóc khách hàng."
+  },
+  {
+    "role": "production_manager",
+    "instruction": "Cách tạo kế hoạch sản xuất?",
+    "response": "Để tạo kế hoạch sản xuất: 1) Vào module Sản xuất, 2) Chọn 'Kế hoạch sản xuất', 3) Nhấn 'Tạo kế hoạch mới', 4) Chọn sản phẩm cần sản xuất và số lượng, 5) Thiết lập thời gian bắt đầu và kết thúc, 6) Phân bổ nguồn lực: máy móc, nhân công, nguyên vật liệu, 7) Lưu và phê duyệt kế hoạch. Hệ thống sẽ tự động kiểm tra khả năng đáp ứng."
+  },
+  {
+    "role": "production_manager",
+    "instruction": "Làm thế nào để kiểm soát chất lượng sản phẩm?",
+    "response": "Để kiểm soát chất lượng sản phẩm: 1) Vào module Sản xuất, 2) Chọn 'Kiểm soát chất lượng', 3) Tạo phiếu kiểm tra cho từng lô sản phẩm, 4) Thực hiện kiểm tra theo tiêu chuẩn: kích thước, màu sắc, chức năng, 5) Ghi nhận kết quả và xử lý sản phẩm không đạt, 6) Tạo báo cáo chất lượng định kỳ, 7) Cập nhật quy trình sản xuất nếu cần."
+  },
+  {
+    "role": "production_manager",
+    "instruction": "Cách quản lý nguyên vật liệu trong sản xuất?",
+    "response": "Để quản lý nguyên vật liệu trong sản xuất: 1) Vào module Sản xuất, 2) Chọn 'Quản lý NVL', 3) Xem danh sách nguyên vật liệu với thông tin: mã, tên, đơn vị, tồn kho, 4) Tạo phiếu yêu cầu NVL cho kế hoạch sản xuất, 5) Theo dõi quá trình cấp phát và sử dụng, 6) Kiểm tra định mức tiêu hao, 7) Cập nhật tồn kho và báo cáo chi phí NVL."
+  },
+  {
+    "role": "customer_service",
+    "instruction": "Làm thế nào để xử lý khiếu nại khách hàng?",
+    "response": "Để xử lý khiếu nại khách hàng: 1) Vào module Chăm sóc khách hàng, 2) Chọn 'Quản lý khiếu nại', 3) Tạo ticket mới với thông tin khách hàng và nội dung khiếu nại, 4) Phân loại mức độ ưu tiên và gán cho nhân viên xử lý, 5) Theo dõi tiến độ xử lý và cập nhật trạng thái, 6) Liên hệ khách hàng để thông báo giải pháp, 7) Đóng ticket sau khi khách hàng hài lòng."
+  },
+  {
+    "role": "customer_service",
+    "instruction": "Cách tạo báo cáo chăm sóc khách hàng?",
+    "response": "Để tạo báo cáo chăm sóc khách hàng: 1) Vào module Chăm sóc khách hàng, 2) Chọn 'Báo cáo', 3) Chọn loại báo cáo: số lượng ticket, thời gian xử lý, mức độ hài lòng, 4) Thiết lập bộ lọc: thời gian, nhân viên, loại vấn đề, 5) Xem các chỉ số KPI: tỷ lệ giải quyết, thời gian phản hồi trung bình, 6) Xuất báo cáo và chia sẻ với quản lý."
+  },
+  {
+    "role": "it_support",
+    "instruction": "Làm thế nào để khắc phục lỗi đăng nhập hệ thống?",
+    "response": "Để khắc phục lỗi đăng nhập hệ thống: 1) Kiểm tra kết nối mạng và tài khoản người dùng, 2) Xác minh tên đăng nhập và mật khẩu, 3) Kiểm tra trạng thái tài khoản có bị khóa không, 4) Xóa cache trình duyệt và thử lại, 5) Nếu vẫn lỗi, reset mật khẩu qua email, 6) Kiểm tra cài đặt bảo mật hệ thống, 7) Ghi nhận sự cố và báo cáo cho quản trị viên."
+  },
+  {
+    "role": "it_support",
+    "instruction": "Cách bảo trì hệ thống ERP?",
+    "response": "Để bảo trì hệ thống ERP: 1) Lên lịch bảo trì định kỳ (thường vào cuối tuần), 2) Thông báo trước cho người dùng về thời gian bảo trì, 3) Sao lưu toàn bộ dữ liệu trước khi bảo trì, 4) Kiểm tra và cập nhật phần mềm, 5) Tối ưu hóa cơ sở dữ liệu, 6) Kiểm tra hiệu suất hệ thống, 7) Khôi phục dịch vụ và thông báo cho người dùng."
+  }
+] 
