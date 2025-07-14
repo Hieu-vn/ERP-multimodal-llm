@@ -23,7 +23,10 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain import hub # Để tải prompt cho agent
 from erp_ai_core.tools import get_current_date, graph_erp_lookup, VectorSearchTool, LiveERP_APITool, DataAnalysisTool # Import các công cụ
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline # For re-ranking
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline, AutoModelForSeq2SeqLM, AutoModelForCausalLM # For re-ranking
+from peft import PeftModel
+import torch
+import os
 from erp_ai_core.agent_sales import get_product_stock_level, create_order, get_order_status, get_customer_outstanding_balance
 from erp_ai_core.agent_inventory import get_inventory_overview, stock_in, stock_out, inventory_check, get_low_stock_alerts
 from erp_ai_core.agent_finance import get_revenue_report, get_expense_report, get_customer_debt, create_receipt, create_payment
@@ -59,9 +62,10 @@ class RAGPipeline:
         self.vector_store = None
         self.llm = None
         self.chain = None
+        self.reranker_pipeline = None # Ensure reranker is initialized
         print("RAG Pipeline initialized. Call setup() to load models and data.")
 
-    def setup(self):
+    async def setup(self): # Make setup async as it uses await
         """Loads all necessary components: vector store, embedding model, and LLM."""
         print("--- Setting up RAG Pipeline ---")
 
@@ -82,71 +86,74 @@ class RAGPipeline:
         # 2. Initialize the LLM.
         # We will now attempt to load a fine-tuned model, falling back to a base model if not found.
         print(f"Attempting to initialize LLM (base: {self.config.base_model_name})...")
-        
+
         try:
-                from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer, pipeline
-                from peft import PeftModel
-                import torch
-                import os
+            # These imports should be at the top of the file, but for now, keeping them here
+            # as they were in the original code's try block.
+            # Ideally, they should be moved to the top-level imports.
+            from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer, pipeline
+            from peft import PeftModel
+            import torch
+            import os
 
-                model_name = self.config.base_model_name
-                is_causal_lm = False # Assume seq2seq for T5, will be true for Llama/Gemma
+            model_name = self.config.base_model_name
+            is_causal_lm = False # Assume seq2seq for T5, will be true for Llama/Gemma
 
-                # Determine model type and load accordingly
-                if "t5" in model_name.lower() or "flan" in model_name.lower():
-                    ModelClass = AutoModelForSeq2SeqLM
-                    task = "text2text-generation"
-                else: # Assume causal LM for others like Llama, Gemma
-                    ModelClass = AutoModelForCausalLM
-                    task = "text-generation"
-                    is_causal_lm = True
+            # Determine model type and load accordingly
+            if "t5" in model_name.lower() or "flan" in model_name.lower():
+                ModelClass = AutoModelForSeq2SeqLM
+                task = "text2text-generation"
+            else: # Assume causal LM for others like Llama, Gemma
+                ModelClass = AutoModelForCausalLM
+                task = "text-generation"
+                is_causal_lm = True
 
-                print(f"Loading base model: {model_name} with {ModelClass.__name__}")
-                load_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
-                load_in_4bit_enabled = False # Set to False for now
+            print(f"Loading base model: {model_name} with {ModelClass.__name__}")
+            load_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
+            load_in_4bit_enabled = False # Set to False for now
 
-                model = ModelClass.from_pretrained(
-                    model_name,
-                    torch_dtype=load_dtype,
-                    load_in_4bit=load_in_4bit_enabled
-                )
-                tokenizer = AutoTokenizer.from_pretrained(model_name)
+            model = ModelClass.from_pretrained(
+                model_name,
+                torch_dtype=load_dtype,
+                load_in_4bit=load_in_4bit_enabled
+            )
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-                # Load adapter weights if a fine-tuned model path is provided and exists
-                finetuned_model_path = self.config.finetuned_model_path
-                if finetuned_model_path and os.path.exists(finetuned_model_path):
-                    print(f"Loading fine-tuned adapter weights from: {finetuned_model_path}")
-                    model = PeftModel.from_pretrained(model, finetuned_model_path)
-                    print("Fine-tuned model loaded successfully.")
-                else:
-                    print(f"Fine-tuned model not found at '{finetuned_model_path}'. Using base model.")
+            # Load adapter weights if a fine-tuned model path is provided and exists
+            finetuned_model_path = self.config.finetuned_model_path
+            if finetuned_model_path and os.path.exists(finetuned_model_path):
+                print(f"Loading fine-tuned adapter weights from: {finetuned_model_path}")
+                model = PeftModel.from_pretrained(model, finetuned_model_path)
+                print("Fine-tuned model loaded successfully.")
+            else:
+                print(f"Fine-tuned model not found at '{finetuned_model_path}'. Using base model.")
 
-                if is_causal_lm and tokenizer.pad_token is None:
-                    tokenizer.pad_token = tokenizer.eos_token
-                elif not is_causal_lm and tokenizer.pad_token is None:
-                    tokenizer.pad_token = tokenizer.eos_token
+            if is_causal_lm and tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
+            elif not is_causal_lm and tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
 
-                # Configure pipeline_kwargs based on task
-                pipeline_kwargs = {
-                    "max_new_tokens": 256,
-                    "max_length": 512, # Keep for T5, will be less critical for larger context models
-                    "temperature": 0.7, # Keep temperature for now, will be handled by pipeline
-                    "top_k": 50,
-                }
-                if is_causal_lm: # Add do_sample and top_p for causal LMs
-                    pipeline_kwargs["do_sample"] = True
-                    pipeline_kwargs["top_p"] = 0.95
+            # Configure pipeline_kwargs based on task
+            pipeline_kwargs = {
+                "max_new_tokens": 256,
+                "max_length": 512, # Keep for T5, will be less critical for larger context models
+                "temperature": 0.7, # Keep temperature for now, will be handled by pipeline
+                "top_k": 50,
+            }
+            if is_causal_lm: # Add do_sample and top_p for causal LMs
+                pipeline_kwargs["do_sample"] = True
+                pipeline_kwargs["top_p"] = 0.95
 
-                # Create the transformers pipeline object
-                hf_pipeline = pipeline(
-                    task=task,
-                    model=model,
-                    tokenizer=tokenizer,
-                    **pipeline_kwargs
-                )
+            # Create the transformers pipeline object
+            hf_pipeline = pipeline(
+                task=task,
+                model=model,
+                tokenizer=tokenizer,
+                **pipeline_kwargs
+            )
 
-                self.llm = HuggingFacePipeline(pipeline=hf_pipeline)
-                print("LLM initialized successfully.")
+            self.llm = HuggingFacePipeline(pipeline=hf_pipeline)
+            print("LLM initialized successfully.")
         except ImportError as e:
             print(f"Warning: Could not import necessary libraries for fine-tuned model loading ({e}). Falling back to basic HuggingFacePipeline.")
             self.llm = HuggingFacePipeline.from_model_id(
@@ -223,6 +230,10 @@ class RAGPipeline:
             self.agent_prompt_template = """Bạn là trợ lý AI chuyên nghiệp cho hệ thống ERP, hỗ trợ tiếng Việt. Nhiệm vụ của bạn là trả lời chính xác, sử dụng thông minh các công cụ nghiệp vụ bên dưới:\n\nBạn có các công cụ sau:\n{tools}\n\n**Hướng dẫn sử dụng tool:**\n- **`vector_search`**: Dùng cho câu hỏi kiến thức tổng quát, quy trình, định nghĩa, chính sách.\n- **`graph_erp_lookup`**: Dùng cho truy vấn dữ liệu quan hệ, số liệu, danh sách, hoặc các truy vấn phức tạp về mối quan hệ.\n- **`get_product_stock_level`**: Kiểm tra tồn kho sản phẩm.\n- **`create_order`**: Tạo đơn hàng mới.\n- **`get_order_status`**: Kiểm tra trạng thái đơn hàng.\n- **`get_customer_outstanding_balance`**: Kiểm tra công nợ khách hàng.\n- **`get_inventory_overview`**: Lấy tổng quan tồn kho.\n- **`stock_in`**: Nhập kho.\n- **`stock_out`**: Xuất kho.\n- **`inventory_check`**: Kiểm kê kho.\n- **`get_low_stock_alerts`**: Cảnh báo tồn kho tối thiểu.\n- **`get_revenue_report`**: Lấy báo cáo doanh thu.\n- **`get_expense_report`**: Lấy báo cáo chi phí.\n- **`get_customer_debt`**: Kiểm tra công nợ khách hàng.\n- **`create_receipt`**: Lập phiếu thu.\n- **`create_payment`**: Lập phiếu chi.\n\nHãy chọn đúng công cụ cho từng loại câu hỏi nghiệp vụ.\n\nSử dụng format reasoning như sau:\n\nQuestion: câu hỏi đầu vào\nThought: phân tích từng bước, chọn tool phù hợp\nAction: tên tool\nAction Input: input cho tool\nObservation: kết quả trả về\n... (có thể lặp lại nhiều lần)\nThought: Đã đủ thông tin\nFinal Answer: câu trả lời cuối cùng\n\nBắt đầu!\n\nQuestion: {input}\nThought:{agent_scratchpad}\n"""
             # No self.chain initialization here, it will be done dynamically in query()
             print("RAG Agent components initialized. AgentExecutor will be built dynamically per query.")
+
+        except Exception as e:
+            print(f"Error building RAG Agent components: {e}")
+            raise # Re-raise to stop execution if agent setup fails
 
     @llm_retry
     async def query(self, role: str, question: str) -> dict:
@@ -344,7 +355,7 @@ class RAGPipeline:
 if __name__ == '__main__':
     async def main():
         pipeline = RAGPipeline()
-        pipeline.setup()
+        await pipeline.setup() # Await the async setup
 
         print("\n--- Performing test query ---")
         test_role = "warehouse_manager"

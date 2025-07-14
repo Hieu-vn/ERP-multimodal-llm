@@ -35,3 +35,7 @@ pydantic>=2.4.0
 # Utilities
 tqdm>=4.65.0
 python-dotenv>=1.0.0
+pytest>=7.0.0
+pytest-mock>=3.0.0
+neo4j>=5.0.0
+pytest-asyncio>=0.21.0
