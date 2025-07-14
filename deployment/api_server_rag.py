@@ -53,7 +53,7 @@ def health_check():
     return {"status": "ok", "pipeline_ready": PipelineSingleton._instance is not None}
 
 @app.post("/query", tags=["AI Assistant"], response_model=QueryResponse)
-def handle_query(request: QueryRequest, pipeline: RAGPipeline = Depends(get_pipeline)):
+async def handle_query(request: QueryRequest, pipeline: RAGPipeline = Depends(get_pipeline)):
     """
     Receives a user query and returns a RAG-powered answer.
     This endpoint uses FastAPI's dependency injection for clean, testable code.
@@ -64,7 +64,7 @@ def handle_query(request: QueryRequest, pipeline: RAGPipeline = Depends(get_pipe
     print(f"Received query for role '{request.role}': '{request.question}'")
 
     try:
-        result = pipeline.query(role=request.role, question=request.question)
+        result = await pipeline.query(role=request.role, question=request.question)
         return QueryResponse(answer=result['answer'], source_documents=[doc['metadata'] for doc in result['source_documents']])
     except Exception as e:
         print(f"An error occurred during query processing: {e}")
