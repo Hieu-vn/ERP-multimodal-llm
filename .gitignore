@@ -1,49 +1,40 @@
 # Python
 __pycache__/
 *.pyc
-*.pyd
 *.pyo
-
-# Virtual environment
+*.pyd
+.Python
+env/
 venv/
 .venv/
-/env/
-/bin/
-/include/
-/lib/
-/lib64/
+pip-log.txt
+pip-delete-this-directory.txt
+.coverage
+.tox/
+.pytest_cache/
 
 # IDEs
-.idea/
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Operating System
+# OS
 .DS_Store
-thumbs.db
+Thumbs.db
 
-# Data and Models
-data_preparation/vector_store/
-finetuning/outputs/
-finetuning/finetuned_erp_model/
-
-# Environment variables
+# Project specific
+logs/
+uploads/
+qdrant_data/
 .env
-
-# Batch scripts (optional, if you don't want to track them)
-*.bat
-
-# Testing
-/.pytest_cache
-
-# Temporary files
-/commit_message.txt
-
-# Logs
+test_report_*.json
 *.log
 
-# Databases
-*.db
-*.sqlite3
-
-# Images
-/518093175_24592050853712963_1351796755862461291_n.jpg
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.bak
+*.orig

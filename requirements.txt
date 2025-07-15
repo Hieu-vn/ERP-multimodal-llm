@@ -1,0 +1,18 @@
+# ERP AI Pro v2.0 - Essential Dependencies Only
+fastapi==0.108.0
+uvicorn==0.26.0
+torch==2.1.0
+transformers==4.40.0
+sentence-transformers==2.6.0
+qdrant-client==1.7.0
+redis==5.0.0
+pillow==10.2.0
+easyocr==1.7.0
+pandas==2.2.0
+scikit-learn==1.4.0
+prophet==1.1.0
+numpy==1.26.0
+pydantic==2.6.0
+python-multipart==0.0.6
+requests==2.31.0
+python-dotenv==1.0.0

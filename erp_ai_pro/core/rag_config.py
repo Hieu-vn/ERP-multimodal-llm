@@ -28,14 +28,24 @@ class RAGConfig:
 
     # --- LLM Configuration ---
     # This section is designed to be compatible with a future Model Registry.
-    # The base model identifier from Hugging Face Hub.
-    base_model_name: str = os.getenv("BASE_MODEL_NAME", "google/flan-t5-base")
-
-    # The fine-tuned adapter path. This can be a local path or a Hub identifier.
-    # In a production MLOps setup, this would be populated by the CI/CD pipeline
-    # after a new model is trained and registered.
-    # Set to an empty string or None to use the base model only.
-    finetuned_model_path: str = os.getenv("FINETUNED_MODEL_PATH", "path/to/your/finetuned_erp_model") # Placeholder path
+    # Modern Language Models - UPGRADED
+    base_model_name: str = os.getenv("BASE_MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
+    
+    # Alternative models for specific use cases
+    vietnamese_model: str = os.getenv("VIETNAMESE_MODEL", "vinai/PhoGPT-7B-Instruct")
+    reasoning_model: str = os.getenv("REASONING_MODEL", "microsoft/WizardLM-13B-V1.2")
+    
+    # Model configuration
+    max_tokens: int = int(os.getenv("MAX_TOKENS", 4096))
+    temperature: float = float(os.getenv("TEMPERATURE", 0.7))
+    top_p: float = float(os.getenv("TOP_P", 0.9))
+    
+    # VLLM configuration for performance
+    use_vllm: bool = os.getenv("USE_VLLM", "true").lower() == "true"
+    gpu_memory_utilization: float = float(os.getenv("GPU_MEMORY_UTILIZATION", 0.8))
+    
+    # Remove outdated finetuned model path
+    # finetuned_model_path: str = os.getenv("FINETUNED_MODEL_PATH", "") # REMOVED
 
     # --- Re-ranker Configuration ---
     reranker_model_name: str = os.getenv("RERANKER_MODEL_NAME", "cross-encoder/ms-marco-MiniLM-L-6-v2") # Example re-ranker model
