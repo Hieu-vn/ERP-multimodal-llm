@@ -22,10 +22,20 @@ Democratize việc truy cập dữ liệu ERP, biến những truy vấn phức 
 
 ### 🔥 Core Features
 - **🗣️ Natural Language Processing**: Truy vấn dữ liệu ERP bằng tiếng Việt tự nhiên
-- **🧠 Advanced RAG Pipeline**: Kết hợp vector search (ChromaDB) + knowledge graph (Neo4j) + LLM
-- **🔒 Role-Based Access Control (RBAC)**: Phân quyền chi tiết theo vai trò người dùng
-- **⚡ Multi-Agent Architecture**: Specialized agents cho Finance, Inventory, Sales
-- **🔄 Real-time Data Integration**: Kết nối trực tiếp với ERP APIs
+- **🧠 Advanced Agentic RAG**: Kết hợp vector search (ChromaDB) + knowledge graph (Neo4j) + LLM với multi-agent reasoning
+- **🔒 Role-Based Access Control (RBAC)**: Phân quyền chi tiết cho 10+ vai trò người dùng
+- **⚡ Multi-Agent Architecture**: 8 specialized agents cho mọi module ERP
+- **🔄 Real-time Data Integration**: Kết nối trực tiếp với ERP APIs và UI automation
+
+### 📊 ERP Modules Coverage
+- **💰 Finance & Accounting**: Doanh thu, chi phí, công nợ, thanh toán, báo cáo tài chính
+- **📦 Inventory Management**: Quản lý kho, tồn kho, nhập/xuất kho, cảnh báo
+- **🛒 Sales & Orders**: Đơn hàng, khách hàng, sản phẩm, doanh số
+- **🎯 Project Management**: Dự án, task, milestone, resource allocation, risk management
+- **👥 Human Resources (HRM)**: Nhân viên, lương, nghỉ phép, tuyển dụng, đánh giá hiệu suất
+- **🤝 Customer Relationship (CRM)**: Lead, opportunity, khách hàng, support tickets
+- **⚙️ Workflow Automation**: Quy trình tự động, phê duyệt, workflow engine
+- **🖥️ Computer Use Automation**: Tự động hóa UI, data entry, report generation
 
 ### 🛠️ Technical Features
 - **🏗️ Production-Ready API**: FastAPI với async processing
@@ -40,11 +50,54 @@ Democratize việc truy cập dữ liệu ERP, biến những truy vấn phức 
 - **🐳 Docker Support**: Containerized deployment
 - **☁️ Infrastructure as Code**: Terraform configs cho cloud deployment
 
-## Cấu trúc dự án
+## 🏗️ Architecture Overview
+
+### 🤖 AI Agents Ecosystem
+
+**ERP AI Pro** sử dụng kiến trúc multi-agent với 8 specialized agents:
+
+#### 🔍 **Core Agents**
+- **RAG Pipeline Agent**: Agentic RAG với vector search + knowledge graph
+- **Computer Use Agent**: UI automation với computer vision và browser control
+
+#### 📊 **Business Domain Agents**
+- **Sales Agent**: Đơn hàng, sản phẩm, khách hàng, doanh số
+- **Inventory Agent**: Quản lý kho, tồn kho, nhập/xuất, kiểm kê
+- **Finance Agent**: Tài chính, kế toán, thanh toán, báo cáo
+- **Project Management Agent**: Dự án, task, resource, milestone tracking
+- **HRM Agent**: Nhân sự, lương, nghỉ phép, tuyển dụng, đánh giá
+- **CRM Agent**: Lead, opportunity, customer service, marketing
+
+#### ⚙️ **Automation Agents**
+- **Workflow Automation Agent**: Quy trình tự động, approval workflows
+
+### 🔄 Agent Orchestration Flow
+
+1. **Query Analysis**: Xác định domain và business context
+2. **Agent Selection**: Chọn agent phù hợp nhất dựa trên RBAC
+3. **Multi-Agent Reasoning**: Kết hợp nhiều agents nếu cần
+4. **Response Synthesis**: Tổng hợp kết quả từ các agents
+
+## 📁 Cấu trúc dự án
 
 ```
 .
 ├── config/                     # Cấu hình cho các module khác nhau
+│   ├── rag_config.py          # RBAC và tool mapping
+│   └── neo4j_config.py        # Graph database config
+├── erp_ai_core/               # Core AI agents và logic
+│   ├── agent_sales.py         # Sales domain agent
+│   ├── agent_inventory.py     # Inventory management agent
+│   ├── agent_finance.py       # Finance & accounting agent
+│   ├── agent_project_management.py # Project management agent
+│   ├── agent_hrm.py           # Human resources agent
+│   ├── agent_crm.py           # Customer relationship agent
+│   ├── agent_workflow_automation.py # Workflow automation
+│   ├── agent_computer_use.py  # UI automation agent
+│   ├── rag_pipeline.py        # Main RAG orchestrator
+│   ├── vector_search_tool.py  # Vector search tool
+│   ├── graph_erp_tool.py      # Graph database tool
+│   └── data_analysis_tool.py  # Analysis & calculation tool
 ├── data_ingestion/             # Scripts để trích xuất và tải dữ liệu ERP
 ├── data_preparation/           # Scripts để tiền xử lý và chuẩn bị dữ liệu
 ├── deployment/                 # Các script và cấu hình liên quan đến triển khai
