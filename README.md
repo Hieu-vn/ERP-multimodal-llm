@@ -1,18 +1,44 @@
-# ERP AI Pro Version
+# ERP AI Pro Version 🚀
 
-## Giới thiệu dự án
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.0+-green)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://python.org)
+[![LangChain](https://img.shields.io/badge/LangChain-0.1.0+-purple)](https://langchain.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**ERP AI Pro Version** là một trợ lý AI mạnh mẽ được thiết kế để tích hợp với các hệ thống ERP (Enterprise Resource Planning), tận dụng công nghệ Retrieval-Augmented Generation (RAG) và các mô hình ngôn ngữ lớn (LLM). Mục tiêu của dự án là cung cấp một giao diện API RESTful cho phép người dùng truy vấn dữ liệu ERP bằng ngôn ngữ tự nhiên và nhận được câu trả lời chính xác, có nguồn gốc từ dữ liệu doanh nghiệp.
+## 📋 Giới thiệu dự án
 
-Dự án này giúp chuyển đổi cách tương tác với dữ liệu ERP phức tạp, biến nó thành một nguồn thông tin dễ dàng truy cập và phân tích thông qua các câu hỏi thông thường, loại bỏ nhu cầu truy vấn cơ sở dữ liệu trực tiếp hoặc tìm kiếm thủ công.
+**ERP AI Pro Version** là một hệ thống trợ lý AI enterprise-grade được thiết kế để revolutionize cách tương tác với các hệ thống ERP (Enterprise Resource Planning). Sử dụng công nghệ tiên tiến RAG (Retrieval-Augmented Generation) kết hợp với các mô hình ngôn ngữ lớn (LLM), hệ thống cung cấp khả năng truy vấn dữ liệu ERP bằng ngôn ngữ tự nhiên thông qua API RESTful.
 
-## Tính năng chính
+### 🎯 Tầm nhìn
+Democratize việc truy cập dữ liệu ERP, biến những truy vấn phức tạp thành các cuộc hội thoại đơn giản bằng tiếng Việt tự nhiên, loại bỏ rào cản kỹ thuật giữa người dùng và dữ liệu doanh nghiệp.
 
-*   **Truy vấn ngôn ngữ tự nhiên:** Cho phép người dùng đặt câu hỏi về dữ liệu ERP bằng ngôn ngữ tự nhiên.
-*   **Retrieval-Augmented Generation (RAG):** Kết hợp khả năng truy xuất thông tin từ cơ sở dữ liệu vector (ChromaDB) với khả năng tạo văn bản của LLM để cung cấp câu trả lời chính xác và có ngữ cảnh.
-*   **API RESTful:** Cung cấp một API dễ sử dụng được xây dựng với FastAPI để tích hợp liền mạch với các ứng dụng khác.
-*   **Khả năng mở rộng:** Kiến trúc module cho phép dễ dàng mở rộng và tích hợp các mô hình, nguồn dữ liệu mới.
-*   **Tối ưu hóa LLM:** Hỗ trợ các thư viện cho việc tinh chỉnh và tối ưu hóa hiệu suất LLM.
+### 🎁 Giá trị cốt lõi
+- **Accessibility**: Dễ dàng tiếp cận dữ liệu ERP cho mọi người dùng
+- **Intelligence**: AI-powered insights từ dữ liệu doanh nghiệp
+- **Security**: Role-based access control với bảo mật cao
+- **Scalability**: Kiến trúc microservices có thể mở rộng
+
+## ✨ Tính năng chính
+
+### 🔥 Core Features
+- **🗣️ Natural Language Processing**: Truy vấn dữ liệu ERP bằng tiếng Việt tự nhiên
+- **🧠 Advanced RAG Pipeline**: Kết hợp vector search (ChromaDB) + knowledge graph (Neo4j) + LLM
+- **🔒 Role-Based Access Control (RBAC)**: Phân quyền chi tiết theo vai trò người dùng
+- **⚡ Multi-Agent Architecture**: Specialized agents cho Finance, Inventory, Sales
+- **🔄 Real-time Data Integration**: Kết nối trực tiếp với ERP APIs
+
+### 🛠️ Technical Features
+- **🏗️ Production-Ready API**: FastAPI với async processing
+- **📊 Hybrid Data Sources**: Structured (Neo4j) + Unstructured (Vector Store) + Live APIs
+- **🎯 Fine-tuning Support**: Unsloth integration cho model optimization
+- **📈 Query Enhancement**: Query rewriting, expansion và re-ranking
+- **🔧 Retry Mechanisms**: Robust error handling với exponential backoff
+
+### 🌟 Enterprise Features
+- **📋 Comprehensive Logging**: Detailed monitoring và debugging
+- **🏥 Health Checks**: Application health monitoring
+- **🐳 Docker Support**: Containerized deployment
+- **☁️ Infrastructure as Code**: Terraform configs cho cloud deployment
 
 ## Cấu trúc dự án
 
@@ -140,12 +166,88 @@ Sau khi API server đang chạy và vector store đã được tạo, bạn có 
 
 Bạn cũng có thể kiểm tra trạng thái API tại `GET /health`.
 
-## Đóng góp
+## 📚 Documentation
 
-Chúng tôi hoan nghênh mọi đóng góp! Vui lòng fork repository, tạo một nhánh mới cho các thay đổi của bạn và gửi Pull Request.
+Để hiểu sâu hơn về dự án, vui lòng tham khảo các tài liệu chi tiết:
 
-## Liên hệ
+- **[🏗️ Architecture Guide](ARCHITECTURE.md)** - Kiến trúc hệ thống và thiết kế chi tiết
+- **[📡 API Documentation](API.md)** - Tài liệu API đầy đủ với examples
+- **[🚀 Deployment Guide](DEPLOYMENT.md)** - Hướng dẫn triển khai production
+- **[🤝 Contributing Guide](CONTRIBUTING.md)** - Hướng dẫn đóng góp cho dự án
+- **[📝 Changelog](CHANGELOG.md)** - Lịch sử thay đổi và phiên bản
 
-Nếu có bất kỳ câu hỏi hoặc vấn đề nào, vui lòng mở một issue trên GitHub hoặc liên hệ với chúng tôi.
+## 🤝 Đóng góp
+
+Chúng tôi hoan nghênh mọi đóng góp từ cộng đồng! 
+
+### Cách bắt đầu:
+1. 📖 Đọc [Contributing Guide](CONTRIBUTING.md)
+2. 🍴 Fork repository
+3. 🌿 Tạo feature branch
+4. 🔧 Implement changes
+5. 🧪 Add tests
+6. 📝 Update documentation
+7. 🚀 Submit Pull Request
+
+### Lĩnh vực cần đóng góp:
+- 🎯 **Model Optimization**: Fine-tuning và performance
+- 🌍 **Multi-language Support**: English, Chinese support
+- 📊 **Advanced Analytics**: ML-powered insights
+- 📱 **Mobile SDK**: React Native/Flutter integration
+- 📚 **Documentation**: Tutorials và examples
+
+## 🌟 Community & Support
+
+### 💬 Kênh giao tiếp
+- **GitHub Issues**: Bug reports và feature requests
+- **GitHub Discussions**: Q&A và thảo luận
+- **Discord**: Real-time community support
+- **Email**: [maintainers@erp-ai-pro.com]
+
+### 🎯 Roadmap
+- **v1.1.0**: Multi-language support
+- **v1.2.0**: Advanced analytics dashboard  
+- **v1.3.0**: Mobile SDK
+- **v2.0.0**: Distributed architecture
+
+## 📄 License
+
+Dự án này được cấp phép theo [MIT License](LICENSE) - xem file LICENSE để biết chi tiết.
+
+## 🙏 Acknowledgments
+
+### Core Team
+- **AI/ML Engineering**: Model development và optimization
+- **Backend Development**: API và infrastructure
+- **DevOps**: Deployment và monitoring
+- **Documentation**: Technical writing và examples
+
+### Community
+Cảm ơn tất cả contributors đã giúp dự án phát triển:
+- 🐛 Bug reporters
+- 💡 Feature suggesters  
+- 🔧 Code contributors
+- 📚 Documentation improvers
+- 🧪 Testers và feedback providers
+
+### Technology Stack
+- **LangChain**: RAG framework foundation
+- **FastAPI**: Modern web framework
+- **ChromaDB**: Vector database innovation
+- **Neo4j**: Graph database excellence
+- **Unsloth**: Efficient fine-tuning
+- **HuggingFace**: Model ecosystem
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the Enterprise AI Community**
+
+⭐ **Star this repository if you find it helpful!** ⭐
+
+[🚀 Get Started](DEPLOYMENT.md) | [🏗️ Architecture](ARCHITECTURE.md) | [📡 API Docs](API.md) | [🤝 Contributing](CONTRIBUTING.md)
+
+</div>
 
 ```

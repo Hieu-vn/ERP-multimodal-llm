@@ -1,17 +1,33 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim-buster
+# Stage 1: Builder
+# Sử dụng cùng base image để đảm bảo tương thích với các thư viện ML
+FROM pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Tạo một môi trường ảo để cài đặt dependencies
+ENV VIRTUAL_ENV=/app/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install any needed packages specified in requirements.pro.txt
-RUN pip install --no-cache-dir -r requirements.pro.txt
+# Sao chép requirements.pro.txt và cài đặt dependencies vào môi trường ảo
+COPY requirements.pro.txt .
+RUN pip --timeout 1000 install --no-cache-dir -r requirements.pro.txt
 
-# Make port 8000 available to the world outside this container
+# Stage 2: Runtime
+# Sử dụng cùng base image cho runtime để đảm bảo môi trường nhất quán
+FROM pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+
+WORKDIR /app
+
+# Sao chép môi trường ảo đã cài đặt từ stage builder
+COPY --from=builder /app/venv /app/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Sao chép mã nguồn ứng dụng
+COPY . .
+
+# Mở cổng mà ứng dụng FastAPI sẽ lắng nghe
 EXPOSE 8000
 
-# Run the uvicorn server when the container launches
+# Lệnh chạy ứng dụng khi container khởi động
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
