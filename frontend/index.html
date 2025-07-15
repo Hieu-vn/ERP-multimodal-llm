@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP AI Pro - Trợ lý AI cho Doanh nghiệp Việt Nam</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/vietnamese.css">
+    <meta name="description" content="Hệ thống ERP AI Pro - Trợ lý thông minh cho doanh nghiệp Việt Nam">
+    <meta name="keywords" content="ERP, AI, Việt Nam, quản lý doanh nghiệp, trợ lý AI">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="vn-header">
+        <nav class="vn-nav">
+            <div class="vn-nav-brand">
+                <i class="fas fa-chart-line"></i>
+                <span>ERP AI Pro</span>
+            </div>
+            <div class="vn-nav-menu">
+                <a href="#dashboard" class="vn-nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Tổng quan</span>
+                </a>
+                <a href="#sales" class="vn-nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Bán hàng</span>
+                </a>
+                <a href="#inventory" class="vn-nav-link">
+                    <i class="fas fa-warehouse"></i>
+                    <span>Kho hàng</span>
+                </a>
+                <a href="#finance" class="vn-nav-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Tài chính</span>
+                </a>
+                <a href="#ai-chat" class="vn-nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span>Trợ lý AI</span>
+                </a>
+            </div>
+            <div class="vn-nav-user">
+                <div class="vn-user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="vn-user-name">Phạm Khách Hiếu</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="vn-mobile-nav">
+        <a href="#dashboard" class="vn-mobile-nav-item active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Tổng quan</span>
+        </a>
+        <a href="#sales" class="vn-mobile-nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Bán hàng</span>
+        </a>
+        <a href="#inventory" class="vn-mobile-nav-item">
+            <i class="fas fa-warehouse"></i>
+            <span>Kho hàng</span>
+        </a>
+        <a href="#finance" class="vn-mobile-nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Tài chính</span>
+        </a>
+        <a href="#ai-chat" class="vn-mobile-nav-item">
+            <i class="fas fa-robot"></i>
+            <span>AI</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="vn-main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="vn-section active">
+            <div class="vn-container">
+                <div class="vn-section-header">
+                    <h1>Tổng quan hoạt động</h1>
+                    <p>Xin chào! Hôm nay là <span id="current-date"></span></p>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="vn-kpi-grid">
+                    <div class="vn-kpi-card">
+                        <div class="vn-kpi-icon sales">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="vn-kpi-content">
+                            <h3>Doanh thu hôm nay</h3>
+                            <p class="vn-kpi-value">45,600,000 ₫</p>
+                            <span class="vn-kpi-change positive">+12.5%</span>
+                        </div>
+                    </div>
+                    <div class="vn-kpi-card">
+                        <div class="vn-kpi-icon orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="vn-kpi-content">
+                            <h3>Đơn hàng mới</h3>
+                            <p class="vn-kpi-value">24</p>
+                            <span class="vn-kpi-change positive">+8 đơn</span>
+                        </div>
+                    </div>
+                    <div class="vn-kpi-card">
+                        <div class="vn-kpi-icon inventory">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="vn-kpi-content">
+                            <h3>Sản phẩm tồn kho</h3>
+                            <p class="vn-kpi-value">1,247</p>
+                            <span class="vn-kpi-change neutral">5 sắp hết</span>
+                        </div>
+                    </div>
+                    <div class="vn-kpi-card">
+                        <div class="vn-kpi-icon finance">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="vn-kpi-content">
+                            <h3>Công nợ phải thu</h3>
+                            <p class="vn-kpi-value">128,500,000 ₫</p>
+                            <span class="vn-kpi-change negative">Cần theo dõi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="vn-quick-actions">
+                    <h2>Thao tác nhanh</h2>
+                    <div class="vn-action-grid">
+                        <button class="vn-action-btn" onclick="showModal('create-order')">
+                            <i class="fas fa-plus"></i>
+                            <span>Tạo đơn hàng</span>
+                        </button>
+                        <button class="vn-action-btn" onclick="showModal('add-product')">
+                            <i class="fas fa-box"></i>
+                            <span>Thêm sản phẩm</span>
+                        </button>
+                        <button class="vn-action-btn" onclick="showModal('create-invoice')">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Tạo hóa đơn</span>
+                        </button>
+                        <button class="vn-action-btn" onclick="openAIChat()">
+                            <i class="fas fa-robot"></i>
+                            <span>Hỏi AI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="vn-charts-grid">
+                    <div class="vn-chart-card">
+                        <h3>Doanh thu 7 ngày qua</h3>
+                        <canvas id="revenue-chart"></canvas>
+                    </div>
+                    <div class="vn-chart-card">
+                        <h3>Sản phẩm bán chạy</h3>
+                        <div id="top-products"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Section -->
+        <section id="ai-chat" class="vn-section">
+            <div class="vn-container">
+                <div class="vn-chat-container">
+                    <div class="vn-chat-header">
+                        <h2>Trợ lý AI ERP</h2>
+                        <p>Hãy hỏi tôi bất cứ điều gì về hệ thống ERP của bạn</p>
+                    </div>
+                    
+                    <div class="vn-chat-messages" id="chat-messages">
+                        <div class="vn-chat-message ai">
+                            <div class="vn-message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="vn-message-content">
+                                <p>Xin chào! Tôi là trợ lý AI ERP. Tôi có thể giúp bạn:</p>
+                                <ul>
+                                    <li>Kiểm tra tình trạng kho hàng</li>
+                                    <li>Tạo đơn hàng mới</li>
+                                    <li>Theo dõi công nợ khách hàng</li>
+                                    <li>Phân tích doanh thu</li>
+                                    <li>Và nhiều việc khác...</li>
+                                </ul>
+                                <p>Hãy thử hỏi: "Kiểm tra tồn kho sản phẩm SP001"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vn-chat-input">
+                        <input type="text" id="chat-input" placeholder="Nhập câu hỏi của bạn...">
+                        <button onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sales Section -->
+        <section id="sales" class="vn-section">
+            <div class="vn-container">
+                <div class="vn-section-header">
+                    <h1>Quản lý Bán hàng</h1>
+                    <button class="vn-btn primary" onclick="showModal('create-order')">
+                        <i class="fas fa-plus"></i>
+                        Tạo đơn hàng
+                    </button>
+                </div>
+
+                <!-- Sales Stats -->
+                <div class="vn-stats-grid">
+                    <div class="vn-stat-card">
+                        <h3>Doanh thu tháng</h3>
+                        <p class="vn-stat-value">1,245,000,000 ₫</p>
+                        <span class="vn-stat-trend positive">+15.2%</span>
+                    </div>
+                    <div class="vn-stat-card">
+                        <h3>Đơn hàng hoàn thành</h3>
+                        <p class="vn-stat-value">1,847</p>
+                        <span class="vn-stat-trend positive">+8.7%</span>
+                    </div>
+                    <div class="vn-stat-card">
+                        <h3>Khách hàng mới</h3>
+                        <p class="vn-stat-value">156</p>
+                        <span class="vn-stat-trend positive">+12.3%</span>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="vn-data-table">
+                    <div class="vn-table-header">
+                        <h3>Đơn hàng gần nhất</h3>
+                        <div class="vn-table-filters">
+                            <select>
+                                <option>Tất cả trạng thái</option>
+                                <option>Đang xử lý</option>
+                                <option>Đã giao</option>
+                                <option>Đã hủy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="vn-table-responsive">
+                        <table class="vn-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table">
+                                <!-- Orders will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inventory Section -->
+        <section id="inventory" class="vn-section">
+            <div class="vn-container">
+                <div class="vn-section-header">
+                    <h1>Quản lý Kho hàng</h1>
+                    <button class="vn-btn primary" onclick="showModal('add-product')">
+                        <i class="fas fa-plus"></i>
+                        Thêm sản phẩm
+                    </button>
+                </div>
+
+                <!-- Inventory Stats -->
+                <div class="vn-inventory-overview">
+                    <div class="vn-overview-card">
+                        <h3>Tổng giá trị kho</h3>
+                        <p class="vn-overview-value">2,845,000,000 ₫</p>
+                    </div>
+                    <div class="vn-overview-card">
+                        <h3>Sản phẩm tồn kho</h3>
+                        <p class="vn-overview-value">1,247 sản phẩm</p>
+                    </div>
+                    <div class="vn-overview-card alert">
+                        <h3>Sắp hết hàng</h3>
+                        <p class="vn-overview-value">5 sản phẩm</p>
+                    </div>
+                </div>
+
+                <!-- Product List -->
+                <div class="vn-data-table">
+                    <div class="vn-table-header">
+                        <h3>Danh sách sản phẩm</h3>
+                        <div class="vn-table-search">
+                            <input type="text" placeholder="Tìm kiếm sản phẩm...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div class="vn-table-responsive">
+                        <table class="vn-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã sản phẩm</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá bán</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table">
+                                <!-- Products will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Finance Section -->
+        <section id="finance" class="vn-section">
+            <div class="vn-container">
+                <div class="vn-section-header">
+                    <h1>Quản lý Tài chính</h1>
+                    <button class="vn-btn primary" onclick="showModal('create-invoice')">
+                        <i class="fas fa-plus"></i>
+                        Tạo hóa đơn
+                    </button>
+                </div>
+
+                <!-- Financial Overview -->
+                <div class="vn-finance-grid">
+                    <div class="vn-finance-card revenue">
+                        <h3>Doanh thu</h3>
+                        <p class="vn-finance-value">1,245,000,000 ₫</p>
+                        <span class="vn-finance-period">Tháng này</span>
+                    </div>
+                    <div class="vn-finance-card expense">
+                        <h3>Chi phí</h3>
+                        <p class="vn-finance-value">890,000,000 ₫</p>
+                        <span class="vn-finance-period">Tháng này</span>
+                    </div>
+                    <div class="vn-finance-card profit">
+                        <h3>Lợi nhuận</h3>
+                        <p class="vn-finance-value">355,000,000 ₫</p>
+                        <span class="vn-finance-period">Tháng này</span>
+                    </div>
+                    <div class="vn-finance-card debt">
+                        <h3>Công nợ</h3>
+                        <p class="vn-finance-value">128,500,000 ₫</p>
+                        <span class="vn-finance-period">Cần thu</span>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="vn-data-table">
+                    <div class="vn-table-header">
+                        <h3>Giao dịch gần nhất</h3>
+                        <div class="vn-table-filters">
+                            <select>
+                                <option>Tất cả loại</option>
+                                <option>Thu</option>
+                                <option>Chi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="vn-table-responsive">
+                        <table class="vn-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã giao dịch</th>
+                                    <th>Loại</th>
+                                    <th>Số tiền</th>
+                                    <th>Mô tả</th>
+                                    <th>Ngày</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table">
+                                <!-- Transactions will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="vn-modal-overlay" onclick="closeModal()">
+        <div class="vn-modal" onclick="event.stopPropagation()">
+            <div class="vn-modal-header">
+                <h3 id="modal-title"></h3>
+                <button class="vn-modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="vn-modal-content" id="modal-content">
+                <!-- Modal content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/vietnamese.js"></script>
+</body>
+</html>
