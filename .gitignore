@@ -31,3 +31,19 @@ finetuning/finetuned_erp_model/
 
 # Batch scripts (optional, if you don't want to track them)
 *.bat
+
+# Testing
+/.pytest_cache
+
+# Temporary files
+/commit_message.txt
+
+# Logs
+*.log
+
+# Databases
+*.db
+*.sqlite3
+
+# Images
+/518093175_24592050853712963_1351796755862461291_n.jpg
