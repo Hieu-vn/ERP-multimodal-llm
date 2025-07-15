@@ -1,0 +1,499 @@
+/* ===== VIETNAMESE CULTURAL & LOCALIZATION STYLES ===== */
+
+/* ===== VIETNAMESE TEXT OPTIMIZATION ===== */
+/* Tối ưu hiển thị tiếng Việt */
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+    -webkit-font-feature-settings: "liga" 1;
+    font-feature-settings: "liga" 1;
+    text-rendering: optimizeLegibility;
+}
+
+/* Tối ưu cho dấu thanh tiếng Việt */
+.vn-vietnamese-text {
+    font-variant-ligatures: common-ligatures;
+    font-kerning: auto;
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+}
+
+/* Xử lý dấu câu tiếng Việt */
+.vn-vietnamese-text::before {
+    content: "";
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+/* ===== VIETNAMESE CURRENCY FORMATTING ===== */
+.vn-currency {
+    font-family: 'Inter', monospace;
+    font-weight: 600;
+    color: var(--vn-primary);
+    white-space: nowrap;
+}
+
+.vn-currency::after {
+    content: " ₫";
+    font-weight: 500;
+    color: var(--vn-gray-600);
+}
+
+/* Định dạng số tiền lớn */
+.vn-large-amount {
+    font-size: var(--vn-font-size-lg);
+    font-weight: 700;
+}
+
+.vn-large-amount::after {
+    content: " VNĐ";
+    font-size: var(--vn-font-size-sm);
+    font-weight: 500;
+    color: var(--vn-gray-600);
+}
+
+/* ===== VIETNAMESE BUSINESS COLORS ===== */
+/* Màu sắc phù hợp với văn hóa kinh doanh Việt Nam */
+.vn-fortune-color {
+    color: #B8860B; /* Vàng tài lộc */
+}
+
+.vn-prosperity-color {
+    color: #228B22; /* Xanh thịnh vượng */
+}
+
+.vn-luck-color {
+    color: #DC143C; /* Đỏ may mắn */
+}
+
+.vn-stability-color {
+    color: #2F4F4F; /* Xanh ổn định */
+}
+
+/* ===== VIETNAMESE CALENDAR & DATE ===== */
+.vn-date-display {
+    font-family: var(--vn-font-family);
+    color: var(--vn-gray-700);
+}
+
+.vn-lunar-date {
+    font-size: var(--vn-font-size-sm);
+    color: var(--vn-gray-500);
+    font-style: italic;
+}
+
+.vn-holiday-marker {
+    color: var(--vn-error);
+    font-weight: 600;
+}
+
+.vn-working-day {
+    color: var(--vn-success);
+}
+
+.vn-weekend {
+    color: var(--vn-warning);
+}
+
+/* ===== VIETNAMESE BUSINESS CONTEXT ===== */
+/* Styling cho các thuật ngữ kinh doanh Việt Nam */
+.vn-business-term {
+    font-weight: 500;
+    color: var(--vn-gray-800);
+}
+
+.vn-company-name {
+    font-weight: 600;
+    color: var(--vn-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vn-tax-code {
+    font-family: monospace;
+    font-weight: 500;
+    color: var(--vn-gray-600);
+    background: var(--vn-gray-100);
+    padding: var(--vn-spacing-xs) var(--vn-spacing-sm);
+    border-radius: var(--vn-border-radius-sm);
+}
+
+/* ===== VIETNAMESE MOBILE OPTIMIZATION ===== */
+/* Tối ưu cho người dùng Android tại Việt Nam */
+@media (max-width: 768px) {
+    /* Tăng kích thước touch target cho điện thoại */
+    .vn-mobile-touch {
+        min-height: 48px;
+        min-width: 48px;
+    }
+    
+    /* Tối ưu cho thumb navigation */
+    .vn-mobile-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    /* Tối ưu cho một tay sử dụng */
+    .vn-one-hand-zone {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        pointer-events: none;
+        background: linear-gradient(transparent, rgba(0,0,0,0.05));
+    }
+    
+    /* Tối ưu font size cho mobile VN */
+    .vn-mobile-text {
+        font-size: calc(var(--vn-font-size-base) * 1.1);
+        line-height: 1.7;
+    }
+    
+    /* Tối ưu spacing cho mobile */
+    .vn-mobile-spacing {
+        padding: var(--vn-spacing-md);
+        margin: var(--vn-spacing-sm) 0;
+    }
+}
+
+/* ===== VIETNAMESE ANDROID OPTIMIZATION ===== */
+/* Tối ưu cho các thiết bị Android phổ biến tại VN */
+@media (max-width: 360px) {
+    /* Cho các thiết bị Android cấp thấp */
+    .vn-android-low {
+        font-size: var(--vn-font-size-sm);
+        line-height: 1.8;
+    }
+    
+    .vn-android-button {
+        padding: var(--vn-spacing-md);
+        font-size: var(--vn-font-size-base);
+        min-height: 44px;
+    }
+}
+
+@media (min-width: 361px) and (max-width: 414px) {
+    /* Cho các thiết bị Android phổ thông */
+    .vn-android-mid {
+        font-size: var(--vn-font-size-base);
+        line-height: 1.6;
+    }
+}
+
+/* ===== VIETNAMESE REGIONAL PREFERENCES ===== */
+/* Tối ưu cho sở thích người dùng từng vùng miền */
+.vn-northern-style {
+    /* Phong cách Bắc Bộ - tối giản, nghiêm túc */
+    --vn-primary: #1976D2;
+    --vn-accent: #FFC107;
+    border-radius: var(--vn-border-radius-sm);
+}
+
+.vn-southern-style {
+    /* Phong cách Nam Bộ - năng động, màu sắc */
+    --vn-primary: #E91E63;
+    --vn-accent: #FF5722;
+    border-radius: var(--vn-border-radius-lg);
+}
+
+.vn-central-style {
+    /* Phong cách Trung Bộ - cân bằng, truyền thống */
+    --vn-primary: #4CAF50;
+    --vn-accent: #FF9800;
+    border-radius: var(--vn-border-radius-md);
+}
+
+/* ===== VIETNAMESE HIERARCHY & RESPECT ===== */
+/* Thể hiện cấp bậc và sự tôn trọng trong văn hóa VN */
+.vn-senior-level {
+    border-left: 4px solid var(--vn-primary);
+    background: var(--vn-primary-light);
+    padding: var(--vn-spacing-md);
+}
+
+.vn-manager-level {
+    border-left: 4px solid var(--vn-warning);
+    background: var(--vn-secondary-light);
+    padding: var(--vn-spacing-md);
+}
+
+.vn-staff-level {
+    border-left: 4px solid var(--vn-info);
+    background: var(--vn-gray-50);
+    padding: var(--vn-spacing-md);
+}
+
+/* ===== VIETNAMESE NOTIFICATION STYLES ===== */
+/* Thông báo phù hợp với văn hóa VN */
+.vn-notification-vn {
+    font-family: var(--vn-font-family);
+    border-radius: var(--vn-border-radius-lg);
+    box-shadow: var(--vn-shadow-lg);
+}
+
+.vn-notification-vn.success {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: var(--vn-white);
+}
+
+.vn-notification-vn.warning {
+    background: linear-gradient(135deg, #FF9800, #FFB74D);
+    color: var(--vn-white);
+}
+
+.vn-notification-vn.error {
+    background: linear-gradient(135deg, #F44336, #E57373);
+    color: var(--vn-white);
+}
+
+/* ===== VIETNAMESE FORM STYLES ===== */
+/* Form phù hợp với thói quen người dùng VN */
+.vn-form-vn {
+    background: var(--vn-white);
+    border-radius: var(--vn-border-radius-lg);
+    padding: var(--vn-spacing-xl);
+    box-shadow: var(--vn-shadow-md);
+}
+
+.vn-form-vn .vn-form-label {
+    color: var(--vn-gray-700);
+    font-weight: 500;
+    margin-bottom: var(--vn-spacing-sm);
+}
+
+.vn-form-vn .vn-form-input {
+    border: 2px solid var(--vn-gray-200);
+    border-radius: var(--vn-border-radius-md);
+    padding: var(--vn-spacing-md);
+    font-size: var(--vn-font-size-base);
+    transition: all var(--vn-transition-fast);
+}
+
+.vn-form-vn .vn-form-input:focus {
+    border-color: var(--vn-primary);
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
+.vn-form-vn .vn-form-required {
+    color: var(--vn-error);
+    font-weight: 600;
+}
+
+/* ===== VIETNAMESE ACCESSIBILITY ===== */
+/* Tối ưu cho người dùng khuyết tật tại VN */
+.vn-high-contrast {
+    --vn-primary: #000000;
+    --vn-white: #FFFFFF;
+    --vn-gray-900: #000000;
+    --vn-gray-100: #F0F0F0;
+}
+
+.vn-large-text {
+    font-size: calc(var(--vn-font-size-base) * 1.5);
+    line-height: 1.8;
+}
+
+.vn-focus-visible {
+    outline: 3px solid var(--vn-primary);
+    outline-offset: 2px;
+}
+
+/* ===== VIETNAMESE CULTURAL ELEMENTS ===== */
+/* Các yếu tố văn hóa Việt Nam */
+.vn-cultural-header {
+    background: linear-gradient(135deg, #D32F2F, #FFC107);
+    color: var(--vn-white);
+    padding: var(--vn-spacing-xl);
+    text-align: center;
+    border-radius: var(--vn-border-radius-lg);
+    margin-bottom: var(--vn-spacing-xl);
+}
+
+.vn-cultural-pattern {
+    background-image: 
+        linear-gradient(45deg, transparent 49%, rgba(255, 193, 7, 0.1) 50%, transparent 51%),
+        linear-gradient(-45deg, transparent 49%, rgba(211, 47, 47, 0.1) 50%, transparent 51%);
+    background-size: 20px 20px;
+}
+
+.vn-lucky-number {
+    color: var(--vn-success);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.vn-unlucky-number {
+    color: var(--vn-gray-500);
+    font-weight: 400;
+}
+
+/* ===== VIETNAMESE SEASONAL THEMES ===== */
+/* Chủ đề theo mùa tại Việt Nam */
+.vn-tet-theme {
+    --vn-primary: #D32F2F;
+    --vn-secondary: #FFC107;
+    --vn-accent: #FF5722;
+    background: linear-gradient(135deg, #FFEBEE, #FFF8E1);
+}
+
+.vn-summer-theme {
+    --vn-primary: #2196F3;
+    --vn-secondary: #4CAF50;
+    --vn-accent: #FF9800;
+    background: linear-gradient(135deg, #E3F2FD, #E8F5E8);
+}
+
+.vn-autumn-theme {
+    --vn-primary: #FF9800;
+    --vn-secondary: #795548;
+    --vn-accent: #F44336;
+    background: linear-gradient(135deg, #FFF3E0, #F3E5F5);
+}
+
+/* ===== VIETNAMESE BUSINESS HOURS ===== */
+/* Hiển thị giờ làm việc theo thói quen VN */
+.vn-business-hours {
+    display: flex;
+    align-items: center;
+    gap: var(--vn-spacing-sm);
+    color: var(--vn-gray-600);
+    font-size: var(--vn-font-size-sm);
+}
+
+.vn-business-hours.open {
+    color: var(--vn-success);
+}
+
+.vn-business-hours.closed {
+    color: var(--vn-error);
+}
+
+.vn-business-hours.lunch-break {
+    color: var(--vn-warning);
+}
+
+/* ===== VIETNAMESE LOADING INDICATORS ===== */
+/* Loading phù hợp với văn hóa VN */
+.vn-loading-vn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--vn-spacing-sm);
+    color: var(--vn-primary);
+    font-weight: 500;
+}
+
+.vn-loading-vn::before {
+    content: "⏳";
+    animation: vn-loading-pulse 1.5s infinite;
+}
+
+@keyframes vn-loading-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ===== VIETNAMESE TOOLTIPS ===== */
+/* Tooltip hướng dẫn bằng tiếng Việt */
+.vn-tooltip {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted var(--vn-primary);
+}
+
+.vn-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--vn-gray-900);
+    color: var(--vn-white);
+    padding: var(--vn-spacing-sm) var(--vn-spacing-md);
+    border-radius: var(--vn-border-radius-md);
+    font-size: var(--vn-font-size-sm);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--vn-transition-fast);
+    z-index: 1000;
+}
+
+.vn-tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== VIETNAMESE SEARCH OPTIMIZATION ===== */
+/* Tối ưu tìm kiếm cho tiếng Việt */
+.vn-search-vn {
+    position: relative;
+}
+
+.vn-search-vn input {
+    font-family: var(--vn-font-family);
+    font-size: var(--vn-font-size-base);
+    padding: var(--vn-spacing-md);
+    border: 2px solid var(--vn-gray-200);
+    border-radius: var(--vn-border-radius-md);
+    width: 100%;
+    ime-mode: active; /* Hỗ trợ bộ gõ tiếng Việt */
+}
+
+.vn-search-vn input:focus {
+    border-color: var(--vn-primary);
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
+.vn-search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--vn-white);
+    border: 1px solid var(--vn-gray-200);
+    border-radius: var(--vn-border-radius-md);
+    box-shadow: var(--vn-shadow-lg);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.vn-search-suggestion {
+    padding: var(--vn-spacing-md);
+    cursor: pointer;
+    border-bottom: 1px solid var(--vn-gray-100);
+}
+
+.vn-search-suggestion:hover {
+    background: var(--vn-gray-50);
+}
+
+.vn-search-suggestion:last-child {
+    border-bottom: none;
+}
+
+/* ===== VIETNAMESE PRINT OPTIMIZATION ===== */
+/* Tối ưu in ấn cho văn bản tiếng Việt */
+@media print {
+    .vn-print-header {
+        text-align: center;
+        margin-bottom: var(--vn-spacing-xl);
+        border-bottom: 2px solid var(--vn-gray-900);
+        padding-bottom: var(--vn-spacing-md);
+    }
+    
+    .vn-print-currency {
+        font-family: "Times New Roman", serif;
+        font-weight: bold;
+    }
+    
+    .vn-print-signature {
+        margin-top: var(--vn-spacing-2xl);
+        text-align: right;
+    }
+    
+    .vn-print-date {
+        font-style: italic;
+        color: var(--vn-gray-600);
+    }
+}
