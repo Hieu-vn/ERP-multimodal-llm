@@ -35,7 +35,21 @@ pydantic>=2.4.0
 # Utilities
 tqdm>=4.65.0
 python-dotenv>=1.0.0
-pytest>=7.0.0
-pytest-mock>=3.0.0
-neo4j>=5.0.0
-pytest-asyncio>=0.21.0
+
+# Computer Use Agent
+selenium>=4.15.0
+pillow>=10.0.0
+opencv-python>=4.8.0
+
+# Email & Communication
+smtplib-ssl>=1.0.0
+
+# Async processing
+asyncio-throttle>=1.0.0
+
+# Neo4j driver
+neo4j>=5.15.0
+
+# Additional data processing
+numpy>=1.24.0
+pandas>=2.0.0

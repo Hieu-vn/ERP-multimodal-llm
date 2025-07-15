@@ -14,7 +14,7 @@ from langchain_core.documents import Document
 project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
-from config.rag_config import RAGConfig
+from erp_ai_pro.core.rag_config import RAGConfig
 
 def create_vector_store():
     config = RAGConfig()

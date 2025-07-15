@@ -1,0 +1,47 @@
+[
+  {
+    "id": "doc1",
+    "content": "Quy trình nhập kho hàng hóa: Hàng hóa được kiểm tra chất lượng, số lượng theo đơn đặt hàng. Sau đó, lập phiếu nhập kho và cập nhật vào hệ thống ERP. Hàng hóa được sắp xếp vào vị trí lưu trữ đã định.",
+    "metadata": {
+      "source": "SOP_Warehouse_001",
+      "document_type": "procedure",
+      "authorized_roles": ["warehouse_manager", "inventory_clerk"]
+    }
+  },
+  {
+    "id": "doc2",
+    "content": "Để kiểm tra tồn kho hiện tại, truy cập module 'Quản lý tồn kho' trong hệ thống ERP, chọn 'Báo cáo tồn kho' và nhập mã sản phẩm hoặc tên sản phẩm. Hệ thống sẽ hiển thị số lượng tồn kho theo từng kho và vị trí.",
+    "metadata": {
+      "source": "ERP_User_Manual_Inventory",
+      "document_type": "user_manual",
+      "authorized_roles": ["warehouse_manager", "inventory_clerk", "sales_manager"]
+    }
+  },
+  {
+    "id": "doc3",
+    "content": "Chính sách hoàn trả hàng: Khách hàng có thể yêu cầu hoàn trả hàng trong vòng 7 ngày kể từ ngày nhận hàng nếu sản phẩm lỗi hoặc không đúng mô tả. Cần có hóa đơn gốc và sản phẩm còn nguyên vẹn. Liên hệ phòng chăm sóc khách hàng để được hỗ trợ.",
+    "metadata": {
+      "source": "Customer_Service_Policy",
+      "document_type": "policy",
+      "authorized_roles": ["customer_service", "sales_manager"]
+    }
+  },
+  {
+    "id": "doc4",
+    "content": "Để tạo đơn đặt hàng mới, vào module 'Quản lý bán hàng', chọn 'Tạo đơn hàng'. Điền thông tin khách hàng, sản phẩm, số lượng và giá. Sau khi xác nhận, đơn hàng sẽ được gửi đến bộ phận kho để xử lý.",
+    "metadata": {
+      "source": "ERP_User_Manual_Sales",
+      "document_type": "user_manual",
+      "authorized_roles": ["sales_manager", "sales_representative"]
+    }
+  },
+  {
+    "id": "doc5",
+    "content": "Báo cáo doanh thu hàng tháng được tạo tự động vào ngày 5 hàng tháng. Báo cáo này tổng hợp doanh thu từ tất cả các kênh bán hàng và phân tích theo khu vực, sản phẩm. Có thể truy cập trong module 'Báo cáo tài chính'.",
+    "metadata": {
+      "source": "Finance_Reporting_Guide",
+      "document_type": "guide",
+      "authorized_roles": ["finance_manager", "sales_manager"]
+    }
+  }
+]
