@@ -1,0 +1,164 @@
+# Multi-stage build for Enhanced ERP AI Pro
+# Stage 1: Builder with all dependencies
+FROM nvidia/cuda:12.1-devel-ubuntu22.04 AS builder
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-venv \
+    build-essential \
+    git \
+    curl \
+    wget \
+    cmake \
+    ninja-build \
+    pkg-config \
+    libssl-dev \
+    libffi-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libsqlite3-dev \
+    libreadline-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libdb-dev \
+    zlib1g-dev \
+    libexpat1-dev \
+    libbz2-dev \
+    libffi-dev \
+    libgdbm-dev \
+    liblzma-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    uuid-dev \
+    libreadline-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    tk-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libgdbm-compat-dev \
+    libdb-dev \
+    zlib1g-dev \
+    libexpat1-dev \
+    libbz2-dev \
+    libffi-dev \
+    libgdbm-dev \
+    liblzma-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    uuid-dev \
+    # Image processing dependencies
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-vie \
+    libopencv-dev \
+    python3-opencv \
+    # Network tools
+    netcat \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Create virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade pip and install wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy requirements first for better caching
+COPY requirements.pro.txt .
+
+# Install Python dependencies with optimizations
+RUN pip install --no-cache-dir -r requirements.pro.txt
+
+# Install additional ML optimizations
+RUN pip install --no-cache-dir \
+    flash-attn \
+    triton \
+    bitsandbytes \
+    deepspeed
+
+# Stage 2: Production runtime
+FROM nvidia/cuda:12.1-runtime-ubuntu22.04 AS runtime
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-distutils \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-vie \
+    libopencv-dev \
+    libgomp1 \
+    libomp-dev \
+    netcat \
+    curl \
+    wget \
+    redis-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set work directory
+WORKDIR /app
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p uploads static logs cache && \
+    chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Add labels for better maintainability
+LABEL maintainer="ERP AI Pro Team"
+LABEL version="2.0.0"
+LABEL description="Enhanced ERP AI Pro with Llama-3.1, Multimodal, and GraphRAG"
+
+# Use init to handle signals properly
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Start command with better performance settings
+CMD ["python", "-m", "uvicorn", "erp_ai_pro.api.enhanced_main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "4", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--max-requests", "1000", \
+     "--max-requests-jitter", "100", \
+     "--preload", \
+     "--access-log", \
+     "--log-config", "logging.conf"]
