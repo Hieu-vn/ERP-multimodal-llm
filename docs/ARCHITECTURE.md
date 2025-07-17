@@ -1,67 +1,70 @@
-# 🏗️ Architecture Documentation
+# 🏗️ ARCHITECTURE.md
 
-## Tổng quan kiến trúc
+## 🌐 Tổng quan kiến trúc
 
-ERP AI Pro Version được thiết kế theo kiến trúc **Multi-Agent RAG Pipeline** với các thành phần được tách biệt rõ ràng, cho phép mở rộng và bảo trì dễ dàng.
+ERP AI Pro Version được thiết kế theo kiến trúc Multi-Agent RAG Pipeline với các thành phần tách biệt rõ ràng, cho phép mở rộng và bảo trì dễ dàng. Hệ thống hỗ trợ truy vấn ERP bằng ngôn ngữ tự nhiên, tích hợp sâu với các module nghiệp vụ, tối ưu cho doanh nghiệp Việt Nam.
 
-## 📐 Kiến trúc tổng thể
+---
+
+## 1️⃣ Kiến trúc tổng thể
 
 ```mermaid
 graph TB
     User[👤 User] --> API[🌐 FastAPI Server]
     API --> RAGPipeline[🧠 RAG Pipeline]
-    
     RAGPipeline --> QueryProcessor[🔄 Query Processor]
     QueryProcessor --> VectorStore[📊 ChromaDB Vector Store]
     QueryProcessor --> GraphDB[🕸️ Neo4j Graph DB]
     QueryProcessor --> LiveAPI[🔴 Live ERP APIs]
-    
     RAGPipeline --> Agents[🤖 Specialized Agents]
     Agents --> FinanceAgent[💰 Finance Agent]
     Agents --> InventoryAgent[📦 Inventory Agent]
     Agents --> SalesAgent[📈 Sales Agent]
-    
+    Agents --> ProjectAgent[📅 Project Management Agent]
+    Agents --> HRMAgent[👥 HRM Agent]
+    Agents --> CRMAgent[🤝 CRM Agent]
+    Agents --> ComputerUseAgent[🖥️ Computer Use Agent]
+    Agents --> WorkflowAgent[⚙️ Workflow Automation Agent]
     RAGPipeline --> LLM[🎯 Language Model]
     LLM --> BaseModel[📚 Base Model]
     LLM --> FineTuned[⚡ Fine-tuned Adapters]
 ```
 
-## 🏛️ Layered Architecture
+---
 
-### 1. Presentation Layer
-- **FastAPI Application** (`main.py`)
+## 2️⃣ Layered Architecture
+
+### 🖥️ Presentation Layer
+- 🌐 **FastAPI Application** (`main.py`)
   - RESTful API endpoints
   - Request/Response models với Pydantic
   - Async request handling
-  - Health checks và monitoring
+  - Health checks & monitoring
 
-### 2. Business Logic Layer
-- **RAG Pipeline** (`erp_ai_core/rag_pipeline.py`)
+### 🧠 Business Logic Layer
+- 🧠 **RAG Pipeline** (`erp_ai_pro/core/rag_pipeline.py`)
   - Query orchestration
   - Multi-agent coordination
   - Role-based access control
-  - Error handling và retry logic
+  - Error handling & retry logic
+- 🤖 **Specialized Agents**
+  - 💰 Finance, 📦 Inventory, 📈 Sales, 📅 Project Management, 👥 HRM, 🤝 CRM, 🖥️ Computer Use, ⚙️ Workflow Automation
 
-- **Specialized Agents**
-  - **Finance Agent** (`agent_finance.py`): Tài chính, báo cáo, công nợ
-  - **Inventory Agent** (`agent_inventory.py`): Quản lý kho, tồn kho
-  - **Sales Agent** (`agent_sales.py`): Bán hàng, đơn hàng, khách hàng
+### 🗄️ Data Layer
+- 📊 **Vector Store** (ChromaDB): Unstructured knowledge
+- 🕸️ **Graph Database** (Neo4j): Structured relationships
+- 🔴 **Live APIs**: Real-time ERP data
+- 🗂️ **File Storage**: Local/cloud file systems
 
-### 3. Data Layer
-- **Vector Store** (ChromaDB): Unstructured knowledge
-- **Graph Database** (Neo4j): Structured relationships
-- **Live APIs**: Real-time ERP data
-- **File Storage**: Local/cloud file systems
+### ⚙️ Infrastructure Layer
+- 🐳 **Containerization**: Docker
+- ☸️ **Orchestration**: Kubernetes (EKS)
+- 🏗️ **IaC**: Terraform
+- 📈 **Monitoring**: Health checks, logging
 
-### 4. Infrastructure Layer
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes (EKS)
-- **IaC**: Terraform
-- **Monitoring**: Health checks, logging
+---
 
-## 🔄 Data Flow Architecture
-
-### Query Processing Flow
+## 3️⃣ Luồng dữ liệu & Quy trình xử lý truy vấn
 
 ```mermaid
 sequenceDiagram
@@ -73,13 +76,10 @@ sequenceDiagram
     participant GDB as Graph DB
     participant LLM as Language Model
     participant A as Agents
-
     U->>API: POST /query
     API->>RAG: process_query()
-    
     RAG->>QP: rewrite_query()
     QP->>QP: expand_query()
-    
     par Parallel Retrieval
         RAG->>VS: vector_search()
         and
@@ -87,235 +87,74 @@ sequenceDiagram
         and
         RAG->>A: agent_tools()
     end
-    
     RAG->>LLM: generate_response()
     LLM->>RAG: response + sources
     RAG->>API: QueryResponse
     API->>U: JSON Response
 ```
 
-## 🎯 Component Details
+---
 
-### RAG Pipeline Components
+## 4️⃣ Thành phần chi tiết
 
-#### 1. Query Enhancement
-```python
-class QueryProcessor:
-    - query_rewriting: Paraphrase câu hỏi
-    - query_expansion: Mở rộng từ khóa
-    - intent_detection: Phân loại mục đích
-```
+### 🧩 RAG Pipeline Components
+- ✍️ **Query Enhancement**: rewriting, expansion, intent detection
+- 🔍 **Hybrid Retrieval**: vector search (ChromaDB), graph traversal (Neo4j), API calls
+- 🏅 **Re-ranking**: cross-encoder, context filtering, source prioritization
+- 📝 **Response Generation**: context injection, role adaptation, source citation
 
-#### 2. Multi-Modal Retrieval
-```python
-class HybridRetriever:
-    - vector_search: Semantic similarity trong ChromaDB
-    - graph_traversal: Entity relationships trong Neo4j
-    - api_calls: Real-time data từ ERP systems
-```
+### 🤖 Agent Ecosystem
+- 💰 **Finance Agent**: Báo cáo doanh thu, chi phí, công nợ, thu/chi
+- 📦 **Inventory Agent**: Tổng quan kho, nhập/xuất, cảnh báo tồn kho
+- 📈 **Sales Agent**: Đơn hàng, khách hàng, trạng thái đơn
+- 📅 **Project Management Agent**: Dự án, task, milestone, resource, risk
+- 👥 **HRM Agent**: Nhân sự, tuyển dụng, lương, nghỉ phép, đánh giá
+- 🤝 **CRM Agent**: Lead, opportunity, customer account, support, marketing
+- 🖥️ **Computer Use Agent**: Tự động hóa UI, browser, báo cáo, nhập liệu
+- ⚙️ **Workflow Automation Agent**: Tự động hóa quy trình, phê duyệt, workflow engine
 
-#### 3. Re-ranking System
-```python
-class ReRanker:
-    - relevance_scoring: Cross-encoder models
-    - context_filtering: Lọc theo role và context
-    - source_prioritization: Ưu tiên nguồn tin cậy
-```
+### 🛠️ Công cụ hỗ trợ (tools.py)
+- 📊 **Vector Search Tool**: Tìm kiếm semantic
+- 🕸️ **Graph ERP Lookup**: Truy vấn Neo4j
+- 🔴 **Live ERP API Tool**: Kết nối ERP API thời gian thực
+- 📈 **Data Analysis Tool**: Tính toán, phân tích
 
-#### 4. Response Generation
-```python
-class ResponseGenerator:
-    - context_injection: Thêm retrieved context
-    - role_adaptation: Điều chỉnh theo user role
-    - source_citation: Trích dẫn nguồn
-```
+---
 
-### Agent Architecture
+## 5️⃣ Bảo mật & RBAC
+- 🛡️ **Role-Based Access Control (RBAC)**: Mapping tool theo role trong rag_config.py
+- 🔑 **Authentication**: Bearer token
+- 🗝️ **Authorization**: Role-based tool access
+- 🧹 **Data Filtering**: Role-specific data views
+- 🧾 **Input Validation**: Pydantic
+- 🚨 **Error Handling**: Secure error messages
 
-#### Finance Agent
-```python
-class FinanceAgent:
-    tools:
-        - get_revenue_report()
-        - get_expense_report()
-        - get_customer_debt()
-        - create_receipt()
-        - create_payment()
-    
-    capabilities:
-        - Financial reporting
-        - Debt management
-        - Payment processing
-```
+---
 
-#### Inventory Agent
-```python
-class InventoryAgent:
-    tools:
-        - get_inventory_overview()
-        - stock_in()
-        - stock_out()
-        - inventory_check()
-        - get_low_stock_alerts()
-    
-    capabilities:
-        - Stock management
-        - Warehouse operations
-        - Alert systems
-```
+## 6️⃣ Tối ưu hóa & Mở rộng
+- 📈 **Horizontal Scaling**: Stateless, load balancing, sharding, caching
+- ⚡ **Performance Optimization**: Model caching, connection pooling, async processing, batch processing
+- 🧮 **Resource Management**: Memory, GPU, CPU
+- ⚙️ **Configuration Management**: Environment-based config, dynamic tool loading, model switching, feature flags
 
-#### Sales Agent
-```python
-class SalesAgent:
-    tools:
-        - get_product_stock_level()
-        - create_order()
-        - get_order_status()
-        - get_customer_outstanding_balance()
-    
-    capabilities:
-        - Order management
-        - Customer service
-        - Sales analytics
-```
+---
 
-## 🔒 Security Architecture
+## 7️⃣ Advanced Features & Roadmap
+- 🌐 Multi-language support
+- 📊 Advanced analytics dashboard
+- 🔔 Real-time notifications
+- 📱 Mobile API support
+- 🏢 Distributed deployment
+- 🧬 Model versioning system
+- 🧪 A/B testing framework
 
-### Role-Based Access Control (RBAC)
+---
 
-```python
-ROLE_TOOL_MAPPING = {
-    "admin": ["all_tools"],
-    "finance_manager": ["finance_tools", "reporting_tools"],
-    "sales_rep": ["sales_tools", "customer_tools"],
-    "warehouse_manager": ["inventory_tools", "stock_tools"],
-    "analyst": ["reporting_tools", "calculation_tools"]
-}
-```
+## 8️⃣ Technical Stack (tóm tắt)
+- 🐍 **Python 3.10+**, ⚡ **FastAPI**, 🦜 **LangChain**, 📊 **ChromaDB**, 🕸️ **Neo4j**, 🤗 **Transformers**, 🦾 **Unsloth**, 🐳 **Docker**, ☸️ **Kubernetes**, 🏗️ **Terraform**, 🔄 **CI/CD**
 
-### Security Layers
-1. **Authentication**: Bearer token validation
-2. **Authorization**: Role-based tool access
-3. **Data Filtering**: Role-specific data views
-4. **Input Validation**: Pydantic model validation
-5. **Error Handling**: Secure error messages
+---
 
-## 🚀 Scalability Considerations
+## 9️⃣ Kết luận
 
-### Horizontal Scaling
-- **Stateless Design**: Không lưu trạng thái giữa requests
-- **Load Balancing**: Multiple API instances
-- **Database Sharding**: Phân tán dữ liệu
-- **Caching Layers**: Redis cho frequently accessed data
-
-### Performance Optimization
-- **Model Caching**: Cache loaded models trong memory
-- **Connection Pooling**: Database connection reuse
-- **Async Processing**: Non-blocking I/O operations
-- **Batch Processing**: Group operations cho efficiency
-
-### Resource Management
-- **Memory Management**: Efficient model loading
-- **GPU Utilization**: Optimal device allocation
-- **CPU Optimization**: Multi-threading cho I/O operations
-
-## 🔧 Configuration Management
-
-### Environment-based Config
-```python
-@dataclass
-class RAGConfig:
-    # Model Configuration
-    base_model_name: str
-    finetuned_model_path: str
-    embedding_model_name: str
-    
-    # Database Configuration
-    vector_store_path: str
-    neo4j_uri: str
-    
-    # API Configuration
-    erp_api_base_url: str
-    api_timeout: int
-    
-    # Performance Configuration
-    retrieval_k: int
-    max_tokens: int
-    temperature: float
-```
-
-### Runtime Configuration
-- **Dynamic Tool Loading**: Based on user role
-- **Model Switching**: Base vs fine-tuned models
-- **Feature Flags**: Enable/disable experimental features
-
-## 📊 Monitoring & Observability
-
-### Application Metrics
-- **Request Latency**: Response time tracking
-- **Throughput**: Requests per second
-- **Error Rates**: Failed request percentage
-- **Resource Usage**: CPU, memory, GPU utilization
-
-### Business Metrics
-- **Query Success Rate**: Successful responses
-- **User Satisfaction**: Response quality metrics
-- **Tool Usage**: Agent tool utilization stats
-- **Data Source Performance**: Retrieval efficiency
-
-### Logging Strategy
-```python
-class LoggingConfig:
-    levels:
-        - DEBUG: Development debugging
-        - INFO: General information
-        - WARNING: Potential issues
-        - ERROR: Error conditions
-        - CRITICAL: System failures
-    
-    structured_logging:
-        - JSON format
-        - Contextual information
-        - Correlation IDs
-        - Performance metrics
-```
-
-## 🔄 Data Pipeline Architecture
-
-### ETL Pipeline
-```mermaid
-graph LR
-    Source[📄 Source Data] --> Extract[📥 Extract]
-    Extract --> Transform[🔄 Transform]
-    Transform --> Load[📤 Load]
-    
-    Load --> Neo4j[🕸️ Neo4j]
-    Load --> ChromaDB[📊 ChromaDB]
-    Load --> Cache[⚡ Cache]
-```
-
-### Data Sources
-1. **CSV Files**: Customer, Product, Order, Employee data
-2. **JSON Knowledge**: Procedures, policies, manuals
-3. **Live APIs**: Real-time ERP system data
-4. **File Uploads**: Documents, attachments
-
-### Data Processing
-1. **Extraction**: CSV parsing, API calls
-2. **Transformation**: Data cleaning, validation, enrichment
-3. **Loading**: Database insertion, index creation
-4. **Validation**: Data quality checks
-
-## 🎯 Future Architecture Considerations
-
-### Planned Enhancements
-- **Multi-language Support**: International deployment
-- **Advanced Analytics**: ML-powered insights
-- **Real-time Streaming**: Event-driven architecture
-- **Mobile SDK**: Native mobile support
-
-### Technology Evolution
-- **Model Upgrades**: Latest LLM integration
-- **Database Optimization**: Advanced indexing strategies
-- **Cloud Migration**: Full cloud-native deployment
-- **AI/ML Pipeline**: Automated model training/deployment
+Kiến trúc ERP AI Pro Version đảm bảo tính module hóa, mở rộng, bảo mật, hiệu năng cao và sẵn sàng cho production, đáp ứng mọi nhu cầu nghiệp vụ và kỹ thuật của doanh nghiệp hiện đại.

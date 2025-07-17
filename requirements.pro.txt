@@ -1,55 +1,134 @@
-# Professional-level dependencies
+# Professional-level dependencies - UPGRADED VERSION
 
-# Core ML libraries (from previous version)
-torch>=2.0.0
-transformers>=4.35.0
-datasets>=2.14.0
-trl>=0.7.0
-accelerate>=0.24.0
-bitsandbytes>=0.41.0
+# Core ML libraries (UPGRADED)
+torch>=2.1.0
+transformers>=4.40.0
+datasets>=2.16.0
+trl>=0.8.0
+accelerate>=0.27.0
+bitsandbytes>=0.42.0
+
+# Advanced Language Models
+llama-cpp-python>=0.2.0
+vllm>=0.3.0
+ollama>=0.1.0
+
+# Multimodal Support
+Pillow>=10.2.0
+opencv-python>=4.9.0
+pytesseract>=0.3.10
+pdf2image>=1.17.0
+easyocr>=1.7.0
+
+# Vision Models
+timm>=0.9.0
+clip-by-openai>=1.0
+open-clip-torch>=2.24.0
 
 # Unsloth for efficient fine-tuning
 unsloth>=2024.1
 
-# --- NEW DEPENDENCIES FOR RAG PRO VERSION ---
+# --- ADVANCED RAG FRAMEWORK ---
 
-# RAG Framework
-langchain>=0.1.0
-langchain-community>=0.0.20
-langchain-core>=0.1.23
+# LangChain with latest features
+langchain>=0.1.10
+langchain-community>=0.0.25
+langchain-core>=0.1.30
+langchain-experimental>=0.0.55
+langgraph>=0.0.40
 
 # Keras compatibility for Transformers
 tf-keras>=2.15.0
 
-# Vector Database
-chromadb>=0.4.22
+# Advanced Vector Database Support
+chromadb>=0.4.24
+pinecone-client>=3.0.0
+weaviate-client>=4.4.0
+qdrant-client>=1.7.0
+pgvector>=0.2.0
 
-# Embedding Models
-sentence-transformers>=2.2.2
+# Embedding Models (Enhanced)
+sentence-transformers>=2.6.0
+fastembed>=0.2.0
 
-# Web framework for API
-fastapi>=0.104.0
-uvicorn>=0.24.0
-pydantic>=2.4.0
+# Graph Database & Knowledge Graphs
+neo4j>=5.17.0
+networkx>=3.2.0
+pyvis>=0.3.0
 
-# Utilities
-tqdm>=4.65.0
+# Web framework for API (Enhanced)
+fastapi>=0.108.0
+uvicorn[standard]>=0.26.0
+pydantic>=2.6.0
+starlette>=0.35.0
+
+# Streaming & WebSocket Support
+websockets>=12.0
+httpx>=0.26.0
+aiofiles>=23.2.0
+
+# Advanced Caching
+redis>=5.0.0
+diskcache>=5.6.0
+
+# Monitoring & Observability
+prometheus-client>=0.19.0
+opentelemetry-api>=1.22.0
+opentelemetry-sdk>=1.22.0
+structlog>=23.2.0
+
+# Performance & Optimization
+numba>=0.59.0
+faiss-cpu>=1.7.4
+faiss-gpu>=1.7.4
+
+# Utilities (Enhanced)
+tqdm>=4.66.0
 python-dotenv>=1.0.0
+pyyaml>=6.0.0
+jinja2>=3.1.0
 
-# Computer Use Agent
-selenium>=4.15.0
-pillow>=10.0.0
-opencv-python>=4.8.0
+# Computer Use Agent (Enhanced)
+selenium>=4.17.0
+playwright>=1.41.0
+beautifulsoup4>=4.12.0
 
 # Email & Communication
-smtplib-ssl>=1.0.0
+aiosmtplib>=3.0.0
+python-telegram-bot>=20.7.0
 
 # Async processing
 asyncio-throttle>=1.0.0
-
-# Neo4j driver
-neo4j>=5.15.0
+asyncpg>=0.29.0
 
 # Additional data processing
-numpy>=1.24.0
-pandas>=2.0.0
+numpy>=1.26.0
+pandas>=2.2.0
+polars>=0.20.0
+pyarrow>=15.0.0
+
+# Machine Learning & Analytics
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+lightgbm>=4.3.0
+optuna>=3.5.0
+
+# Time Series & Forecasting
+prophet>=1.1.0
+statsmodels>=0.14.0
+
+# Security & Authentication
+pyjwt>=2.8.0
+passlib>=1.7.4
+cryptography>=42.0.0
+
+# Development & Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+black>=24.0.0
+isort>=5.13.0
+mypy>=1.8.0
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.5.0
