@@ -8,6 +8,7 @@ import requests
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from enum import Enum
+from pydantic import BaseModel, Field
 
 # Configuration
 ERP_API_BASE_URL = os.getenv("ERP_API_BASE_URL", "http://localhost:9000/api")
@@ -40,51 +41,75 @@ class Priority(Enum):
 
 # ===== PROJECT MANAGEMENT FUNCTIONS =====
 
-def create_project(project_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo dự án mới với đầy đủ thông tin.
-    
-    Args:
-        project_data: {
-            "name": "Tên dự án",
-            "description": "Mô tả dự án",
-            "start_date": "2024-01-15",
-            "end_date": "2024-06-15",
-            "budget": 500000,
-            "manager_id": "EMP001",
-            "team_members": ["EMP002", "EMP003"],
-            "priority": "high",
-            "client_id": "CLIENT001"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/projects"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=project_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+# Định nghĩa Input và Output Schema cho CreateProjectTool
+class CreateProjectInput(BaseModel):
+    project_data: Dict[str, Any] = Field(description="The data for the new project, including name, description, dates, budget, manager_id, team_members, priority, and client_id.")
 
-def get_project_details(project_id: str) -> Dict[str, Any]:
+class CreateProjectOutput(BaseModel):
+    success: bool = Field(description="True if the project was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created project data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateProjectTool:
+    """Tạo dự án mới với đầy đủ thông tin."""
+    input_schema = CreateProjectInput
+    output_schema = CreateProjectOutput
+
+    def run(self, project_data: Dict[str, Any]) -> CreateProjectOutput:
+        url = f"{ERP_API_BASE_URL}/projects"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=project_data, timeout=15)
+            resp.raise_for_status()
+            return CreateProjectOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateProjectOutput(success=False, error=str(e))
+
+class GetProjectDetailsInput(BaseModel):
+    project_id: str = Field(description="The ID of the project to get details for.")
+
+class GetProjectDetailsOutput(BaseModel):
+    success: bool = Field(description="True if the operation was successful, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The project details data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class GetProjectDetailsTool:
     """Lấy chi tiết dự án theo ID."""
-    url = f"{ERP_API_BASE_URL}/projects/{project_id}"
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    input_schema = GetProjectDetailsInput
+    output_schema = GetProjectDetailsOutput
 
-def update_project_status(project_id: str, status: str, notes: str = "") -> Dict[str, Any]:
+    def run(self, project_id: str) -> GetProjectDetailsOutput:
+        url = f"{ERP_API_BASE_URL}/projects/{project_id}"
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+            resp.raise_for_status()
+            return GetProjectDetailsOutput(success=True, data=resp.json())
+        except Exception as e:
+            return GetProjectDetailsOutput(success=False, error=str(e))
+
+class UpdateProjectStatusInput(BaseModel):
+    project_id: str = Field(description="The ID of the project to update.")
+    status: str = Field(description="The new status of the project (e.g., 'active', 'completed').")
+    notes: str = Field(default="", description="Optional notes about the status update.")
+
+class UpdateProjectStatusOutput(BaseModel):
+    success: bool = Field(description="True if the operation was successful, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The updated project data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class UpdateProjectStatusTool:
     """Cập nhật trạng thái dự án."""
-    url = f"{ERP_API_BASE_URL}/projects/{project_id}/status"
-    data = {"status": status, "notes": notes, "updated_at": datetime.now().isoformat()}
-    try:
-        resp = requests.put(url, headers=HEADERS, json=data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    input_schema = UpdateProjectStatusInput
+    output_schema = UpdateProjectStatusOutput
+
+    def run(self, project_id: str, status: str, notes: str = "") -> UpdateProjectStatusOutput:
+        url = f"{ERP_API_BASE_URL}/projects/{project_id}/status"
+        data = {"status": status, "notes": notes, "updated_at": datetime.now().isoformat()}
+        try:
+            resp = requests.put(url, headers=HEADERS, json=data, timeout=15)
+            resp.raise_for_status()
+            return UpdateProjectStatusOutput(success=True, data=resp.json())
+        except Exception as e:
+            return UpdateProjectStatusOutput(success=False, error=str(e))
 
 def get_project_timeline(project_id: str) -> Dict[str, Any]:
     """Lấy timeline và milestone của dự án."""
@@ -108,30 +133,27 @@ def get_project_budget_tracking(project_id: str) -> Dict[str, Any]:
 
 # ===== TASK MANAGEMENT FUNCTIONS =====
 
-def create_task(task_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo công việc mới trong dự án.
-    
-    Args:
-        task_data: {
-            "project_id": "PROJ001",
-            "title": "Thiết kế UI/UX",
-            "description": "Thiết kế giao diện người dùng",
-            "assignee_id": "EMP002",
-            "priority": "high",
-            "due_date": "2024-02-15",
-            "estimated_hours": 40,
-            "dependencies": ["TASK001"],
-            "tags": ["design", "frontend"]
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/tasks"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=task_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateTaskInput(BaseModel):
+    task_data: Dict[str, Any] = Field(description="The data for the new task, including project_id, title, description, assignee_id, priority, due_date, estimated_hours, dependencies, and tags.")
+
+class CreateTaskOutput(BaseModel):
+    success: bool = Field(description="True if the task was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created task data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateTaskTool:
+    """Tạo công việc mới trong dự án."""
+    input_schema = CreateTaskInput
+    output_schema = CreateTaskOutput
+
+    def run(self, task_data: Dict[str, Any]) -> CreateTaskOutput:
+        url = f"{ERP_API_BASE_URL}/tasks"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=task_data, timeout=15)
+            resp.raise_for_status()
+            return CreateTaskOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateTaskOutput(success=False, error=str(e))
 
 def update_task_status(task_id: str, status: str, progress: int = 0) -> Dict[str, Any]:
     """Cập nhật trạng thái và tiến độ công việc."""
@@ -148,20 +170,34 @@ def update_task_status(task_id: str, status: str, progress: int = 0) -> Dict[str
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def assign_task(task_id: str, assignee_id: str, notes: str = "") -> Dict[str, Any]:
+class AssignTaskInput(BaseModel):
+    task_id: str = Field(description="The ID of the task to assign.")
+    assignee_id: str = Field(description="The ID of the employee to assign the task to.")
+    notes: str = Field(default="", description="Optional notes about the assignment.")
+
+class AssignTaskOutput(BaseModel):
+    success: bool = Field(description="True if the task was assigned successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The updated task data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class AssignTaskTool:
     """Gán công việc cho nhân viên."""
-    url = f"{ERP_API_BASE_URL}/tasks/{task_id}/assign"
-    data = {
-        "assignee_id": assignee_id,
-        "notes": notes,
-        "assigned_at": datetime.now().isoformat()
-    }
-    try:
-        resp = requests.put(url, headers=HEADERS, json=data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    input_schema = AssignTaskInput
+    output_schema = AssignTaskOutput
+
+    def run(self, task_id: str, assignee_id: str, notes: str = "") -> AssignTaskOutput:
+        url = f"{ERP_API_BASE_URL}/tasks/{task_id}/assign"
+        data = {
+            "assignee_id": assignee_id,
+            "notes": notes,
+            "assigned_at": datetime.now().isoformat()
+        }
+        try:
+            resp = requests.put(url, headers=HEADERS, json=data, timeout=15)
+            resp.raise_for_status()
+            return AssignTaskOutput(success=True, data=resp.json())
+        except Exception as e:
+            return AssignTaskOutput(success=False, error=str(e))
 
 def get_task_dependencies(task_id: str) -> Dict[str, Any]:
     """Lấy danh sách dependencies của task."""

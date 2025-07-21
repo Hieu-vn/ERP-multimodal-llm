@@ -480,40 +480,61 @@ async def auto_create_purchase_order(po_data: Dict[str, Any]) -> Dict[str, Any]:
     finally:
         agent.cleanup()
 
-async def auto_generate_report(report_type: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
-    """Tự động tạo báo cáo thông qua UI."""
-    agent = ComputerUseAgent()
-    
-    try:
-        # Navigate to reports section
-        agent.driver.get(f"{ERP_BASE_URL}/reports")
-        
-        task_description = f"Generate {report_type} report with parameters: {parameters}"
-        
-        result = await agent.execute_task(task_description)
-        
-        return result
-        
-    finally:
-        agent.cleanup()
+class AutoGenerateReportInput(BaseModel):
+    report_type: str = Field(description="The type of report to generate.")
+    parameters: Dict[str, Any] = Field(description="Parameters for the report generation.")
 
-async def auto_data_entry(data_entry_task: Dict[str, Any]) -> Dict[str, Any]:
+class AutoGenerateReportOutput(BaseModel):
+    success: bool = Field(description="True if the report was generated successfully, False otherwise.")
+    task: Optional[Dict[str, Any]] = Field(None, description="Details of the executed task.")
+    final_screenshot: Optional[str] = Field(None, description="Path to the final screenshot.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class AutoGenerateReportTool:
+    """Tự động tạo báo cáo thông qua UI."""
+    input_schema = AutoGenerateReportInput
+    output_schema = AutoGenerateReportOutput
+
+    async def run(self, report_type: str, parameters: Dict[str, Any]) -> AutoGenerateReportOutput:
+        agent = ComputerUseAgent()
+        try:
+            agent.driver.get(f"{ERP_BASE_URL}/reports")
+            task_description = f"Generate {report_type} report with parameters: {parameters}"
+            result = await agent.execute_task(task_description)
+            if result.get("success"):
+                return AutoGenerateReportOutput(success=True, task=result.get("task"), final_screenshot=result.get("final_screenshot"))
+            else:
+                return AutoGenerateReportOutput(success=False, error=result.get("error"), task=result.get("task"))
+        finally:
+            agent.cleanup()
+
+class AutoDataEntryInput(BaseModel):
+    data_entry_task: Dict[str, Any] = Field(description="The data entry task details, including page_url and form_data.")
+
+class AutoDataEntryOutput(BaseModel):
+    success: bool = Field(description="True if the data entry was successful, False otherwise.")
+    task: Optional[Dict[str, Any]] = Field(None, description="Details of the executed task.")
+    final_screenshot: Optional[str] = Field(None, description="Path to the final screenshot.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class AutoDataEntryTool:
     """Tự động nhập dữ liệu vào forms."""
-    agent = ComputerUseAgent()
-    
-    try:
-        # Navigate to the specified page
-        page_url = data_entry_task.get("page_url", ERP_BASE_URL)
-        agent.driver.get(page_url)
-        
-        task_description = f"Fill out form with data: {data_entry_task.get('form_data')}"
-        
-        result = await agent.execute_task(task_description)
-        
-        return result
-        
-    finally:
-        agent.cleanup()
+    input_schema = AutoDataEntryInput
+    output_schema = AutoDataEntryOutput
+
+    async def run(self, data_entry_task: Dict[str, Any]) -> AutoDataEntryOutput:
+        agent = ComputerUseAgent()
+        try:
+            page_url = data_entry_task.get("page_url", ERP_BASE_URL)
+            agent.driver.get(page_url)
+            task_description = f"Fill out form with data: {data_entry_task.get('form_data')}"
+            result = await agent.execute_task(task_description)
+            if result.get("success"):
+                return AutoDataEntryOutput(success=True, task=result.get("task"), final_screenshot=result.get("final_screenshot"))
+            else:
+                return AutoDataEntryOutput(success=False, error=result.get("error"), task=result.get("task"))
+        finally:
+            agent.cleanup()
 
 async def auto_ui_testing(test_scenarios: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Tự động test UI workflows."""

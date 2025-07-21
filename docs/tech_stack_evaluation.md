@@ -10,7 +10,7 @@
 - **Uvicorn**: ASGI server cho production
 
 #### 2. **AI/ML Stack**
-- **LangChain**: Framework cho RAG pipeline
+- **Automic Agent Architecture**: Hệ thống agent tự động, không phụ thuộc framework bên ngoài
 - **HuggingFace Transformers**: Language models (T5, Flan-T5)
 - **SentenceTransformers**: Embedding models (all-MiniLM-L6-v2)
 - **Unsloth**: Fine-tuning optimization

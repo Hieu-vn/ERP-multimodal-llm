@@ -42,48 +42,27 @@ class PerformanceRating(Enum):
 
 # ===== EMPLOYEE MANAGEMENT =====
 
-def create_employee(employee_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo hồ sơ nhân viên mới.
-    
-    Args:
-        employee_data: {
-            "personal_info": {
-                "first_name": "Nguyễn",
-                "last_name": "Văn A",
-                "email": "nguyenvana@company.com",
-                "phone": "0901234567",
-                "address": "123 Lê Lợi, Q1, TP.HCM",
-                "date_of_birth": "1990-01-15",
-                "citizen_id": "123456789",
-                "gender": "male",
-                "marital_status": "single"
-            },
-            "employment": {
-                "employee_id": "EMP001",
-                "position": "Software Developer",
-                "department": "IT",
-                "manager_id": "EMP100",
-                "start_date": "2024-01-15",
-                "employment_type": "full_time",
-                "probation_period": 90,
-                "work_location": "HCM Office"
-            },
-            "compensation": {
-                "base_salary": 25000000,
-                "currency": "VND",
-                "salary_type": "monthly",
-                "benefits": ["health_insurance", "meal_allowance"]
-            }
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/employees"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=employee_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateEmployeeInput(BaseModel):
+    employee_data: Dict[str, Any] = Field(description="The data for the new employee, including personal_info, employment, and compensation details.")
+
+class CreateEmployeeOutput(BaseModel):
+    success: bool = Field(description="True if the employee was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created employee data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateEmployeeTool:
+    """Tạo hồ sơ nhân viên mới."""
+    input_schema = CreateEmployeeInput
+    output_schema = CreateEmployeeOutput
+
+    def run(self, employee_data: Dict[str, Any]) -> CreateEmployeeOutput:
+        url = f"{ERP_API_BASE_URL}/employees"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=employee_data, timeout=15)
+            resp.raise_for_status()
+            return CreateEmployeeOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateEmployeeOutput(success=False, error=str(e))
 
 def update_employee_info(employee_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
     """Cập nhật thông tin nhân viên."""
@@ -95,15 +74,27 @@ def update_employee_info(employee_id: str, update_data: Dict[str, Any]) -> Dict[
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def get_employee_profile(employee_id: str) -> Dict[str, Any]:
+class GetEmployeeProfileInput(BaseModel):
+    employee_id: str = Field(description="The ID of the employee to get the profile for.")
+
+class GetEmployeeProfileOutput(BaseModel):
+    success: bool = Field(description="True if the operation was successful, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The employee profile data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class GetEmployeeProfileTool:
     """Lấy hồ sơ chi tiết nhân viên."""
-    url = f"{ERP_API_BASE_URL}/employees/{employee_id}/profile"
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    input_schema = GetEmployeeProfileInput
+    output_schema = GetEmployeeProfileOutput
+
+    def run(self, employee_id: str) -> GetEmployeeProfileOutput:
+        url = f"{ERP_API_BASE_URL}/employees/{employee_id}/profile"
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+            resp.raise_for_status()
+            return GetEmployeeProfileOutput(success=True, data=resp.json())
+        except Exception as e:
+            return GetEmployeeProfileOutput(success=False, error=str(e))
 
 def terminate_employee(employee_id: str, termination_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -234,38 +225,27 @@ def evaluate_candidate(evaluation_data: Dict[str, Any]) -> Dict[str, Any]:
 
 # ===== PAYROLL MANAGEMENT =====
 
-def calculate_payroll(payroll_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tính lương cho nhân viên.
-    
-    Args:
-        payroll_data: {
-            "employee_id": "EMP001",
-            "pay_period": "2024-01",
-            "base_salary": 25000000,
-            "overtime_hours": 10,
-            "overtime_rate": 1.5,
-            "allowances": {
-                "meal": 1000000,
-                "transport": 500000,
-                "phone": 200000
-            },
-            "deductions": {
-                "social_insurance": 8,
-                "health_insurance": 1.5,
-                "unemployment_insurance": 1,
-                "personal_income_tax": 10
-            },
-            "bonus": 2000000
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/payroll/calculate"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=payroll_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CalculatePayrollInput(BaseModel):
+    payroll_data: Dict[str, Any] = Field(description="The data for payroll calculation, including employee_id, pay_period, base_salary, overtime_hours, allowances, deductions, and bonus.")
+
+class CalculatePayrollOutput(BaseModel):
+    success: bool = Field(description="True if the payroll was calculated successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The calculated payroll data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CalculatePayrollTool:
+    """Tính lương cho nhân viên."""
+    input_schema = CalculatePayrollInput
+    output_schema = CalculatePayrollOutput
+
+    def run(self, payroll_data: Dict[str, Any]) -> CalculatePayrollOutput:
+        url = f"{ERP_API_BASE_URL}/payroll/calculate"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=payroll_data, timeout=15)
+            resp.raise_for_status()
+            return CalculatePayrollOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CalculatePayrollOutput(success=False, error=str(e))
 
 def generate_payslip(employee_id: str, pay_period: str) -> Dict[str, Any]:
     """Tạo phiếu lương."""
@@ -302,29 +282,27 @@ def process_salary_adjustment(adjustment_data: Dict[str, Any]) -> Dict[str, Any]
 
 # ===== LEAVE MANAGEMENT =====
 
-def submit_leave_request(leave_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Nộp đơn xin nghỉ phép.
-    
-    Args:
-        leave_data: {
-            "employee_id": "EMP001",
-            "leave_type": "annual",
-            "start_date": "2024-03-01",
-            "end_date": "2024-03-05",
-            "days_requested": 5,
-            "reason": "Family vacation",
-            "emergency_contact": "0987654321",
-            "work_handover": "Tasks assigned to colleague"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/leave/requests"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=leave_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class SubmitLeaveRequestInput(BaseModel):
+    leave_data: Dict[str, Any] = Field(description="The data for the leave request, including employee_id, leave_type, start_date, end_date, days_requested, reason, emergency_contact, and work_handover.")
+
+class SubmitLeaveRequestOutput(BaseModel):
+    success: bool = Field(description="True if the leave request was submitted successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The submitted leave request data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class SubmitLeaveRequestTool:
+    """Nộp đơn xin nghỉ phép."""
+    input_schema = SubmitLeaveRequestInput
+    output_schema = SubmitLeaveRequestOutput
+
+    def run(self, leave_data: Dict[str, Any]) -> SubmitLeaveRequestOutput:
+        url = f"{ERP_API_BASE_URL}/leave/requests"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=leave_data, timeout=15)
+            resp.raise_for_status()
+            return SubmitLeaveRequestOutput(success=True, data=resp.json())
+        except Exception as e:
+            return SubmitLeaveRequestOutput(success=False, error=str(e))
 
 def approve_leave_request(request_id: str, approval_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -359,33 +337,27 @@ def get_leave_balance(employee_id: str) -> Dict[str, Any]:
 
 # ===== PERFORMANCE MANAGEMENT =====
 
-def create_performance_goal(goal_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo mục tiêu hiệu suất.
-    
-    Args:
-        goal_data: {
-            "employee_id": "EMP001",
-            "goal_period": "2024-Q1",
-            "goals": [
-                {
-                    "title": "Complete project X",
-                    "description": "Deliver project X on time and budget",
-                    "weight": 40,
-                    "deadline": "2024-03-31",
-                    "success_criteria": "Project delivered with 95% quality score"
-                }
-            ],
-            "set_by": "EMP100"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/performance/goals"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=goal_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreatePerformanceGoalInput(BaseModel):
+    goal_data: Dict[str, Any] = Field(description="The data for the new performance goal, including employee_id, goal_period, goals (list of title, description, weight, deadline, success_criteria), and set_by.")
+
+class CreatePerformanceGoalOutput(BaseModel):
+    success: bool = Field(description="True if the performance goal was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created performance goal data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreatePerformanceGoalTool:
+    """Tạo mục tiêu hiệu suất."""
+    input_schema = CreatePerformanceGoalInput
+    output_schema = CreatePerformanceGoalOutput
+
+    def run(self, goal_data: Dict[str, Any]) -> CreatePerformanceGoalOutput:
+        url = f"{ERP_API_BASE_URL}/performance/goals"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=goal_data, timeout=15)
+            resp.raise_for_status()
+            return CreatePerformanceGoalOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreatePerformanceGoalOutput(success=False, error=str(e))
 
 def conduct_performance_review(review_data: Dict[str, Any]) -> Dict[str, Any]:
     """

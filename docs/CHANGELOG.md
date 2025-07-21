@@ -91,7 +91,7 @@ The first production-ready version of ERP AI Pro Version featuring a complete RA
 - 🧰 Mock data and fixtures
 
 ### 📦 Dependencies
-- **Core**: FastAPI 0.104.0+, LangChain 0.1.0+, ChromaDB 0.4.22+
+- **Core**: FastAPI 0.104.0+, Automic Agent Architecture, ChromaDB 0.4.22+
 - **AI/ML**: Transformers 4.35.0+, PyTorch 2.0.0+, Unsloth 2024.1+
 - **Database**: Neo4j driver, sentence-transformers
 - **Development**: pytest, black, flake8, mypy, pre-commit

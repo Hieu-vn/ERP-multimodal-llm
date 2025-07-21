@@ -2,7 +2,7 @@
 
 ## 🌐 Tổng quan kiến trúc
 
-ERP AI Pro Version được thiết kế theo kiến trúc Multi-Agent RAG Pipeline với các thành phần tách biệt rõ ràng, cho phép mở rộng và bảo trì dễ dàng. Hệ thống hỗ trợ truy vấn ERP bằng ngôn ngữ tự nhiên, tích hợp sâu với các module nghiệp vụ, tối ưu cho doanh nghiệp Việt Nam.
+ERP AI Pro Version được thiết kế theo kiến trúc Multi-Agent Automic Agent Architecture với các thành phần tách biệt rõ ràng, cho phép mở rộng và bảo trì dễ dàng. Hệ thống hỗ trợ truy vấn ERP bằng ngôn ngữ tự nhiên, tích hợp sâu với các module nghiệp vụ, tối ưu cho doanh nghiệp Việt Nam.
 
 ---
 
@@ -11,21 +11,23 @@ ERP AI Pro Version được thiết kế theo kiến trúc Multi-Agent RAG Pipel
 ```mermaid
 graph TB
     User[👤 User] --> API[🌐 FastAPI Server]
-    API --> RAGPipeline[🧠 RAG Pipeline]
-    RAGPipeline --> QueryProcessor[🔄 Query Processor]
-    QueryProcessor --> VectorStore[📊 ChromaDB Vector Store]
-    QueryProcessor --> GraphDB[🕸️ Neo4j Graph DB]
-    QueryProcessor --> LiveAPI[🔴 Live ERP APIs]
-    RAGPipeline --> Agents[🤖 Specialized Agents]
-    Agents --> FinanceAgent[💰 Finance Agent]
-    Agents --> InventoryAgent[📦 Inventory Agent]
-    Agents --> SalesAgent[📈 Sales Agent]
-    Agents --> ProjectAgent[📅 Project Management Agent]
-    Agents --> HRMAgent[👥 HRM Agent]
-    Agents --> CRMAgent[🤝 CRM Agent]
-    Agents --> ComputerUseAgent[🖥️ Computer Use Agent]
-    Agents --> WorkflowAgent[⚙️ Workflow Automation Agent]
-    RAGPipeline --> LLM[🎯 Language Model]
+    API --> MainSystem[🤖 Automic Agent System]
+    MainSystem --> Orchestrator[🧠 Orchestrator Agent]
+    Orchestrator --> KnowledgeAgent[📚 Knowledge Agent]
+    Orchestrator --> MultimodalAgent[🖼️ Multimodal Agent]
+    Orchestrator --> BusinessIntelligenceAgent[📊 BI Agent]
+    Orchestrator --> LiveERPAgent[🔴 Live ERP Agent]
+    Orchestrator --> FallbackAgent[🛡️ Fallback Agent]
+    MainSystem --> SpecializedAgents[🧩 Specialized Agents]
+    SpecializedAgents --> FinanceAgent[💰 Finance Agent]
+    SpecializedAgents --> InventoryAgent[📦 Inventory Agent]
+    SpecializedAgents --> SalesAgent[📈 Sales Agent]
+    SpecializedAgents --> ProjectAgent[📅 Project Management Agent]
+    SpecializedAgents --> HRMAgent[👥 HRM Agent]
+    SpecializedAgents --> CRMAgent[🤝 CRM Agent]
+    SpecializedAgents --> ComputerUseAgent[🖥️ Computer Use Agent]
+    SpecializedAgents --> WorkflowAgent[⚙️ Workflow Automation Agent]
+    MainSystem --> LLM[🎯 Language Model]
     LLM --> BaseModel[📚 Base Model]
     LLM --> FineTuned[⚡ Fine-tuned Adapters]
 ```
@@ -42,12 +44,12 @@ graph TB
   - Health checks & monitoring
 
 ### 🧠 Business Logic Layer
-- 🧠 **RAG Pipeline** (`erp_ai_pro/core/rag_pipeline.py`)
-  - Query orchestration
+- 🤖 **Automic Agent System** (`erp_ai_pro/core/main_system.py`)
+  - Orchestrator agent điều phối các agent chuyên biệt
   - Multi-agent coordination
   - Role-based access control
   - Error handling & retry logic
-- 🤖 **Specialized Agents**
+- 🧩 **Specialized Agents**
   - 💰 Finance, 📦 Inventory, 📈 Sales, 📅 Project Management, 👥 HRM, 🤝 CRM, 🖥️ Computer Use, ⚙️ Workflow Automation
 
 ### 🗄️ Data Layer
@@ -70,26 +72,18 @@ graph TB
 sequenceDiagram
     participant U as User
     participant API as FastAPI
-    participant RAG as RAG Pipeline
-    participant QP as Query Processor
-    participant VS as Vector Store
-    participant GDB as Graph DB
+    participant MainSystem as Automic Agent System
+    participant Orchestrator as Orchestrator Agent
+    participant Agent as Specialized Agent
     participant LLM as Language Model
-    participant A as Agents
     U->>API: POST /query
-    API->>RAG: process_query()
-    RAG->>QP: rewrite_query()
-    QP->>QP: expand_query()
-    par Parallel Retrieval
-        RAG->>VS: vector_search()
-        and
-        RAG->>GDB: graph_query()
-        and
-        RAG->>A: agent_tools()
-    end
-    RAG->>LLM: generate_response()
-    LLM->>RAG: response + sources
-    RAG->>API: QueryResponse
+    API->>MainSystem: process_query()
+    MainSystem->>Orchestrator: route_request()
+    Orchestrator->>Agent: execute()
+    Agent->>LLM: generate_response()
+    LLM->>Agent: response + sources
+    Agent->>MainSystem: result
+    MainSystem->>API: QueryResponse
     API->>U: JSON Response
 ```
 
@@ -97,7 +91,7 @@ sequenceDiagram
 
 ## 4️⃣ Thành phần chi tiết
 
-### 🧩 RAG Pipeline Components
+### 🧩 Automic Agent System Components
 - ✍️ **Query Enhancement**: rewriting, expansion, intent detection
 - 🔍 **Hybrid Retrieval**: vector search (ChromaDB), graph traversal (Neo4j), API calls
 - 🏅 **Re-ranking**: cross-encoder, context filtering, source prioritization
@@ -151,7 +145,7 @@ sequenceDiagram
 ---
 
 ## 8️⃣ Technical Stack (tóm tắt)
-- 🐍 **Python 3.10+**, ⚡ **FastAPI**, 🦜 **LangChain**, 📊 **ChromaDB**, 🕸️ **Neo4j**, 🤗 **Transformers**, 🦾 **Unsloth**, 🐳 **Docker**, ☸️ **Kubernetes**, 🏗️ **Terraform**, 🔄 **CI/CD**
+- 🐍 **Python 3.10+**, ⚡ **FastAPI**, 📊 **ChromaDB**, 🕸️ **Neo4j**, 🤗 **Transformers**, 🦾 **Unsloth**, 🐳 **Docker**, ☸️ **Kubernetes**, 🏗️ **Terraform**, 🔄 **CI/CD**
 
 ---
 

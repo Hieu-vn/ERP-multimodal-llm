@@ -522,16 +522,46 @@ def setup_default_workflows():
 
 # ===== PUBLIC API FUNCTIONS =====
 
-async def trigger_workflow(workflow_id: str, trigger_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Trigger một workflow với dữ liệu đầu vào."""
-    return await workflow_engine.execute_workflow(workflow_id, trigger_data)
+class TriggerWorkflowInput(BaseModel):
+    workflow_id: str = Field(description="The ID of the workflow to trigger.")
+    trigger_data: Dict[str, Any] = Field(description="The input data for the workflow.")
 
-def get_workflow_status(instance_id: str) -> Dict[str, Any]:
+class TriggerWorkflowOutput(BaseModel):
+    success: bool = Field(description="True if the workflow was triggered successfully, False otherwise.")
+    instance_id: Optional[str] = Field(None, description="The ID of the triggered workflow instance if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class TriggerWorkflowTool:
+    """Trigger một workflow với dữ liệu đầu vào."""
+    input_schema = TriggerWorkflowInput
+    output_schema = TriggerWorkflowOutput
+
+    async def run(self, workflow_id: str, trigger_data: Dict[str, Any]) -> TriggerWorkflowOutput:
+        result = await workflow_engine.execute_workflow(workflow_id, trigger_data)
+        if result.get("success"):
+            return TriggerWorkflowOutput(success=True, instance_id=result.get("instance_id"))
+        else:
+            return TriggerWorkflowOutput(success=False, error=result.get("error"))
+
+# Định nghĩa Input và Output Schema cho GetWorkflowStatusTool
+class GetWorkflowStatusInput(BaseModel):
+    instance_id: str = Field(description="The ID of the workflow instance to get status for.")
+
+class GetWorkflowStatusOutput(BaseModel):
+    success: bool = Field(description="True if the operation was successful, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The workflow instance status data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class GetWorkflowStatusTool:
     """Lấy trạng thái của workflow instance."""
-    if instance_id in workflow_engine.active_instances:
-        return {"success": True, "data": workflow_engine.active_instances[instance_id]}
-    else:
-        return {"success": False, "error": "Workflow instance not found"}
+    input_schema = GetWorkflowStatusInput
+    output_schema = GetWorkflowStatusOutput
+
+    def run(self, instance_id: str) -> GetWorkflowStatusOutput:
+        if instance_id in workflow_engine.active_instances:
+            return GetWorkflowStatusOutput(success=True, data=workflow_engine.active_instances[instance_id])
+        else:
+            return GetWorkflowStatusOutput(success=False, error="Workflow instance not found")
 
 def list_active_workflows() -> Dict[str, Any]:
     """Liệt kê tất cả workflows đang chạy."""
@@ -543,23 +573,37 @@ def list_active_workflows() -> Dict[str, Any]:
         }
     }
 
-async def approve_workflow_step(approval_id: str, decision: str, notes: str = "") -> Dict[str, Any]:
+class ApproveWorkflowStepInput(BaseModel):
+    approval_id: str = Field(description="The ID of the approval request.")
+    decision: str = Field(description="The decision ('approve' or 'reject').")
+    notes: str = Field(default="", description="Optional notes about the decision.")
+
+class ApproveWorkflowStepOutput(BaseModel):
+    success: bool = Field(description="True if the operation was successful, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The approval response data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class ApproveWorkflowStepTool:
     """Phê duyệt hoặc từ chối workflow step."""
-    try:
-        url = f"{ERP_API_BASE_URL}/approvals/{approval_id}"
-        data = {
-            "decision": decision,  # "approve" or "reject"
-            "notes": notes,
-            "decided_at": datetime.now().isoformat()
-        }
-        
-        response = requests.put(url, headers=HEADERS, json=data, timeout=15)
-        response.raise_for_status()
-        
-        return {"success": True, "data": response.json()}
-        
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    input_schema = ApproveWorkflowStepInput
+    output_schema = ApproveWorkflowStepOutput
+
+    async def run(self, approval_id: str, decision: str, notes: str = "") -> ApproveWorkflowStepOutput:
+        try:
+            url = f"{ERP_API_BASE_URL}/approvals/{approval_id}"
+            data = {
+                "decision": decision,  # "approve" or "reject"
+                "notes": notes,
+                "decided_at": datetime.now().isoformat()
+            }
+
+            response = requests.put(url, headers=HEADERS, json=data, timeout=15)
+            response.raise_for_status()
+
+            return ApproveWorkflowStepOutput(success=True, data=response.json())
+
+        except Exception as e:
+            return ApproveWorkflowStepOutput(success=False, error=str(e))
 
 # ===== WORKFLOW MONITORING =====
 

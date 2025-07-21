@@ -1,12 +1,12 @@
 # ERP AI Pro Version 🚀
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.0+-green)](https://fastapi.tiangolo.com/) [![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://python.org) [![LangChain](https://img.shields.io/badge/LangChain-0.1.0+-purple)](https://langchain.com) [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.0+-green)](https://fastapi.tiangolo.com/) [![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://python.org) [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
 ## 📋 Giới thiệu dự án
 
-**ERP AI Pro Version** là hệ thống trợ lý AI enterprise-grade, ứng dụng công nghệ RAG (Retrieval-Augmented Generation) kết hợp LLM, multi-agent, hỗ trợ tiếng Việt, tích hợp sâu với mọi module ERP doanh nghiệp. Dự án hướng tới democratize truy cập dữ liệu ERP, biến truy vấn phức tạp thành hội thoại tự nhiên, loại bỏ rào cản kỹ thuật.
+**ERP AI Pro Version** là hệ thống trợ lý AI enterprise-grade, ứng dụng kiến trúc Automic Agent (Multi-Agent) kết hợp LLM, hỗ trợ tiếng Việt, tích hợp sâu với mọi module ERP doanh nghiệp. Dự án hướng tới democratize truy cập dữ liệu ERP, biến truy vấn phức tạp thành hội thoại tự nhiên, loại bỏ rào cản kỹ thuật.
 
 ### 🎯 Mục tiêu & Giá trị cốt lõi
 - 🗝️ **Democratize ERP Data Access**: Truy vấn ERP bằng ngôn ngữ tự nhiên
@@ -24,9 +24,9 @@
 
 ### 🔥 Core Features
 - 🗣️ **Natural Language Processing**: Truy vấn ERP bằng tiếng Việt tự nhiên
-- 🧠 **Advanced Agentic RAG**: Vector search (ChromaDB) + knowledge graph (Neo4j) + LLM + multi-agent reasoning
+- 🤖 **Automic Agent Architecture**: Các agent tự động điều phối, phối hợp, xử lý nghiệp vụ và truy vấn kiến thức
 - 🔒 **Role-Based Access Control (RBAC)**: Phân quyền chi tiết cho 10+ vai trò
-- ⚡ **Multi-Agent Architecture**: 8+ specialized agents cho mọi module ERP
+- ⚡ **Multi-Agent System**: 8+ specialized agents cho mọi module ERP
 - 🔄 **Real-time Data Integration**: Kết nối trực tiếp ERP APIs, UI automation
 - 📊 **Hybrid Data Sources**: Structured (Neo4j), Unstructured (Vector Store), Live APIs
 - 🎯 **Fine-tuning Support**: Unsloth, PEFT

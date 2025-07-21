@@ -8,6 +8,7 @@ import requests
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from enum import Enum
+from pydantic import BaseModel, Field
 
 # Configuration
 ERP_API_BASE_URL = os.getenv("ERP_API_BASE_URL", "http://localhost:9000/api")
@@ -51,69 +52,51 @@ class TicketPriority(Enum):
 
 # ===== LEAD MANAGEMENT =====
 
-def create_lead(lead_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo lead mới.
-    
-    Args:
-        lead_data: {
-            "contact_info": {
-                "first_name": "Nguyễn",
-                "last_name": "Văn A",
-                "email": "nguyenvana@company.com",
-                "phone": "0901234567",
-                "company": "ABC Company",
-                "position": "IT Manager",
-                "website": "https://abccompany.com"
-            },
-            "lead_details": {
-                "source": "website",
-                "campaign": "Q1_2024_Digital_Marketing",
-                "status": "new",
-                "score": 75,
-                "industry": "Technology",
-                "company_size": "50-100",
-                "budget_range": "100000-500000",
-                "timeline": "Q2_2024",
-                "pain_points": ["Manual processes", "Lack of integration"]
-            },
-            "assigned_to": "EMP001",
-            "notes": "Interested in ERP solution for growing business"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/crm/leads"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=lead_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+# Định nghĩa Input và Output Schema cho CreateLeadTool
+class CreateLeadInput(BaseModel):
+    lead_data: Dict[str, Any] = Field(description="The data for the new lead, including contact_info, lead_details, assigned_to, and notes.")
 
-def qualify_lead(lead_id: str, qualification_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Đánh giá chất lượng lead.
-    
-    Args:
-        qualification_data: {
-            "qualification_criteria": {
-                "budget_confirmed": True,
-                "authority_identified": True,
-                "need_established": True,
-                "timeline_defined": True
-            },
-            "score": 85,
-            "qualification_notes": "BANT criteria met",
-            "next_action": "Schedule demo",
-            "qualified_by": "EMP001"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/crm/leads/{lead_id}/qualify"
-    try:
-        resp = requests.put(url, headers=HEADERS, json=qualification_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateLeadOutput(BaseModel):
+    success: bool = Field(description="True if the lead was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created lead data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateLeadTool:
+    """Tạo lead mới."""
+    input_schema = CreateLeadInput
+    output_schema = CreateLeadOutput
+
+    def run(self, lead_data: Dict[str, Any]) -> CreateLeadOutput:
+        url = f"{ERP_API_BASE_URL}/crm/leads"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=lead_data, timeout=15)
+            resp.raise_for_status()
+            return CreateLeadOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateLeadOutput(success=False, error=str(e))
+
+class QualifyLeadInput(BaseModel):
+    lead_id: str = Field(description="The ID of the lead to qualify.")
+    qualification_data: Dict[str, Any] = Field(description="The qualification data for the lead.")
+
+class QualifyLeadOutput(BaseModel):
+    success: bool = Field(description="True if the lead was qualified successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The qualified lead data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class QualifyLeadTool:
+    """Đánh giá chất lượng lead."""
+    input_schema = QualifyLeadInput
+    output_schema = QualifyLeadOutput
+
+    def run(self, lead_id: str, qualification_data: Dict[str, Any]) -> QualifyLeadOutput:
+        url = f"{ERP_API_BASE_URL}/crm/leads/{lead_id}/qualify"
+        try:
+            resp = requests.put(url, headers=HEADERS, json=qualification_data, timeout=15)
+            resp.raise_for_status()
+            return QualifyLeadOutput(success=True, data=resp.json())
+        except Exception as e:
+            return QualifyLeadOutput(success=False, error=str(e))
 
 def convert_lead_to_opportunity(lead_id: str, conversion_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -151,40 +134,27 @@ def get_lead_scoring(lead_id: str) -> Dict[str, Any]:
 
 # ===== OPPORTUNITY MANAGEMENT =====
 
-def create_opportunity(opportunity_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo cơ hội bán hàng.
-    
-    Args:
-        opportunity_data: {
-            "name": "XYZ Corp - Digital Transformation",
-            "account_id": "ACC001",
-            "contact_id": "CON001",
-            "amount": 500000000,
-            "currency": "VND",
-            "stage": "prospecting",
-            "probability": 25,
-            "expected_close_date": "2024-08-15",
-            "lead_source": "referral",
-            "products": [
-                {
-                    "product_id": "PROD001",
-                    "quantity": 1,
-                    "unit_price": 500000000
-                }
-            ],
-            "assigned_to": "EMP002",
-            "team_members": ["EMP003", "EMP004"],
-            "description": "Complete digital transformation project"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/crm/opportunities"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=opportunity_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateOpportunityInput(BaseModel):
+    opportunity_data: Dict[str, Any] = Field(description="The data for the new opportunity, including name, account_id, contact_id, amount, currency, stage, probability, expected_close_date, lead_source, products, assigned_to, team_members, and description.")
+
+class CreateOpportunityOutput(BaseModel):
+    success: bool = Field(description="True if the opportunity was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created opportunity data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateOpportunityTool:
+    """Tạo cơ hội bán hàng."""
+    input_schema = CreateOpportunityInput
+    output_schema = CreateOpportunityOutput
+
+    def run(self, opportunity_data: Dict[str, Any]) -> CreateOpportunityOutput:
+        url = f"{ERP_API_BASE_URL}/crm/opportunities"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=opportunity_data, timeout=15)
+            resp.raise_for_status()
+            return CreateOpportunityOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateOpportunityOutput(success=False, error=str(e))
 
 def update_opportunity_stage(opportunity_id: str, stage_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -263,45 +233,27 @@ def track_proposal_status(proposal_id: str) -> Dict[str, Any]:
 
 # ===== CUSTOMER MANAGEMENT =====
 
-def create_customer_account(account_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo tài khoản khách hàng.
-    
-    Args:
-        account_data: {
-            "company_info": {
-                "name": "ABC Technology Solutions",
-                "industry": "Information Technology",
-                "type": "Enterprise",
-                "size": "500-1000",
-                "website": "https://abctech.com",
-                "description": "Leading IT solutions provider"
-            },
-            "address": {
-                "street": "123 Nguyen Hue",
-                "city": "Ho Chi Minh City",
-                "state": "Ho Chi Minh",
-                "postal_code": "700000",
-                "country": "Vietnam"
-            },
-            "financial_info": {
-                "annual_revenue": 50000000000,
-                "credit_limit": 1000000000,
-                "payment_terms": "Net 30",
-                "currency": "VND"
-            },
-            "assigned_to": "EMP002",
-            "tier": "gold",
-            "source": "referral"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/crm/accounts"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=account_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateCustomerAccountInput(BaseModel):
+    account_data: Dict[str, Any] = Field(description="The data for the new customer account, including company_info, address, financial_info, assigned_to, tier, and source.")
+
+class CreateCustomerAccountOutput(BaseModel):
+    success: bool = Field(description="True if the customer account was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created customer account data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateCustomerAccountTool:
+    """Tạo tài khoản khách hàng."""
+    input_schema = CreateCustomerAccountInput
+    output_schema = CreateCustomerAccountOutput
+
+    def run(self, account_data: Dict[str, Any]) -> CreateCustomerAccountOutput:
+        url = f"{ERP_API_BASE_URL}/crm/accounts"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=account_data, timeout=15)
+            resp.raise_for_status()
+            return CreateCustomerAccountOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateCustomerAccountOutput(success=False, error=str(e))
 
 def create_contact(contact_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -459,42 +411,27 @@ def get_activity_timeline(related_id: str, related_type: str) -> Dict[str, Any]:
 
 # ===== CUSTOMER SERVICE =====
 
-def create_support_ticket(ticket_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Tạo ticket hỗ trợ.
-    
-    Args:
-        ticket_data: {
-            "customer_info": {
-                "account_id": "ACC001",
-                "contact_id": "CON001"
-            },
-            "issue_details": {
-                "title": "Login issues with ERP system",
-                "description": "Users unable to access system since morning",
-                "category": "technical",
-                "subcategory": "login_issues",
-                "priority": "high",
-                "impact": "multiple_users",
-                "urgency": "high"
-            },
-            "environment": {
-                "product": "ERP Core",
-                "version": "2.1.5",
-                "browser": "Chrome 120",
-                "os": "Windows 11"
-            },
-            "assigned_to": "EMP005",
-            "source": "email"
-        }
-    """
-    url = f"{ERP_API_BASE_URL}/crm/tickets"
-    try:
-        resp = requests.post(url, headers=HEADERS, json=ticket_data, timeout=15)
-        resp.raise_for_status()
-        return {"success": True, "data": resp.json()}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+class CreateSupportTicketInput(BaseModel):
+    ticket_data: Dict[str, Any] = Field(description="The data for the new support ticket, including customer_info, issue_details, environment, assigned_to, and source.")
+
+class CreateSupportTicketOutput(BaseModel):
+    success: bool = Field(description="True if the support ticket was created successfully, False otherwise.")
+    data: Optional[Dict[str, Any]] = Field(None, description="The created support ticket data if successful.")
+    error: Optional[str] = Field(None, description="Error message if the operation failed.")
+
+class CreateSupportTicketTool:
+    """Tạo ticket hỗ trợ."""
+    input_schema = CreateSupportTicketInput
+    output_schema = CreateSupportTicketOutput
+
+    def run(self, ticket_data: Dict[str, Any]) -> CreateSupportTicketOutput:
+        url = f"{ERP_API_BASE_URL}/crm/tickets"
+        try:
+            resp = requests.post(url, headers=HEADERS, json=ticket_data, timeout=15)
+            resp.raise_for_status()
+            return CreateSupportTicketOutput(success=True, data=resp.json())
+        except Exception as e:
+            return CreateSupportTicketOutput(success=False, error=str(e))
 
 def update_ticket_status(ticket_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
     """

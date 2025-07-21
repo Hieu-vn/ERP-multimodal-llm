@@ -1,61 +1,94 @@
-from langchain.tools import tool
+from pydantic import BaseModel, Field
 import datetime
 from erp_ai_pro.core.graph_management import neo4j_connection, get_cypher_generation_chain, GRAPH_SCHEMA
 
-@tool
-def get_current_date(query: str) -> str:
+# Define input and output schemas for GetCurrentDateTool
+class GetCurrentDateInput(BaseModel):
+    query: str = Field(description="Any string, will be ignored. Use this tool when the user asks for the current date.")
+
+class GetCurrentDateOutput(BaseModel):
+    current_date: str = Field(description="The current date in YYYY-MM-DD format.")
+
+class GetCurrentDateTool:
     """
     Returns the current date. Use this tool when the user asks for the current date.
-    The input query can be any string, it will be ignored.
     """
-    return datetime.date.today().strftime("%Y-%m-%d")
+    input_schema = GetCurrentDateInput
+    output_schema = GetCurrentDateOutput
 
-@tool
-def graph_erp_lookup(question: str, role: str, llm_model) -> str:
+    def run(self, query: str) -> GetCurrentDateOutput:
+        return GetCurrentDateOutput(current_date=datetime.date.today().strftime("%Y-%m-%d"))
+
+class GraphERPLookupInput(BaseModel):
+    question: str = Field(description="The natural language question about entities, relationships, or specific data points in the ERP.")
+    role: str = Field(description="The user's role in the ERP system.")
+
+class GraphERPLookupOutput(BaseModel):
+    result: str = Field(description="The result of the Cypher query execution.")
+
+class GraphERPLookupTool:
     """
     Generates and executes a Cypher query against the ERP Knowledge Graph based on the user's question and role.
     Use this for questions about entities, relationships, and specific data points in the ERP.
-    Input should be the natural language question and the user's role.
     """
-    try:
-        # Generate Cypher query using LLM
-        cypher_chain = get_cypher_generation_chain(llm_model)
-        generated_cypher = cypher_chain.invoke({"question": question, "role": role})
-        print(f"Generated Cypher: {generated_cypher}")
+    input_schema = GraphERPLookupInput
+    output_schema = GraphERPLookupOutput
 
-        # Execute the generated Cypher query
-        result = neo4j_connection.query(generated_cypher)
-        return str(result)
-    except Exception as e:
-        return f"Error in graph lookup: {e}"
+    def __init__(self, llm_model):
+        self.llm_model = llm_model
+
+    def run(self, question: str, role: str) -> GraphERPLookupOutput:
+        try:
+            # Generate Cypher query using LLM
+            cypher_chain = get_cypher_generation_chain(self.llm_model)
+            generated_cypher = cypher_chain.invoke({"question": question, "role": role})
+            print(f"Generated Cypher: {generated_cypher}")
+
+            # Execute the generated Cypher query
+            result = neo4j_connection.query(generated_cypher)
+            return GraphERPLookupOutput(result=str(result))
+        except Exception as e:
+            return GraphERPLookupOutput(result=f"Error in graph lookup: {e}")
+
+class VectorSearchInput(BaseModel):
+    query: str = Field(description="A clear question to search for relevant documents.")
+    role: str = Field(description="The user's role in the ERP system.")
+
+class VectorSearchOutput(BaseModel):
+    documents: str = Field(description="The concatenated content of relevant documents retrieved from the knowledge base.")
 
 class VectorSearchTool:
+    """
+    Searches the knowledge base for relevant documents based on the user's query and role.
+    Use this tool for general questions, procedural inquiries, or policy lookups.
+    """
+    input_schema = VectorSearchInput
+    output_schema = VectorSearchOutput
+
     def __init__(self, vector_store, retrieval_k):
         self.vector_store = vector_store
         self.retrieval_k = retrieval_k
 
-    @tool
-    def vector_search(self, query: str, role: str) -> str:
-        """
-        Searches the knowledge base for relevant documents based on the user's query and role.
-        Use this tool for general questions, procedural inquiries, or policy lookups.
-        Input should be a clear question and the user's role.
-        """
+    def run(self, query: str, role: str) -> VectorSearchOutput:
         retriever = self.vector_store.as_retriever(search_kwargs={'k': self.retrieval_k, 'filter': {'role': role}})
         docs = retriever.get_relevant_documents(query)
-        return "\n\n".join([doc.page_content for doc in docs])
+        return VectorSearchOutput(documents="\n\n".join([doc.page_content for doc in docs]))
 
-class LiveERP_APITool:
-    def __init__(self):
-        pass # No external connection needed for mock
+class GetProductStockLevelInput(BaseModel):
+    product_id: str = Field(description="The ID of the product (e.g., 'PROD001').")
 
-    @tool
-    def get_product_stock_level(self, product_id: str) -> str:
-        """
-        Retrieves the current stock level for a given product ID from the live ERP system.
-        Use this tool when the user asks for real-time stock information for a specific product.
-        Input should be the product ID (e.g., 'PROD001').
-        """
+class GetProductStockLevelOutput(BaseModel):
+    stock_level: str = Field(description="The current stock level for the product.")
+
+class GetProductStockLevelTool:
+    """
+    Retrieves the current stock level for a given product ID from the live ERP system.
+    Use this tool when the user asks for real-time stock information for a specific product.
+    """
+    input_schema = GetProductStockLevelInput
+    output_schema = GetProductStockLevelOutput
+
+    def run(self, product_id: str) -> GetProductStockLevelOutput:
         mock_stock_data = {
             "PROD001": 150,
             "PROD002": 75,
@@ -63,17 +96,26 @@ class LiveERP_APITool:
         }
         stock = mock_stock_data.get(product_id, "N/A")
         if stock != "N/A":
-            return f"Current stock level for {product_id}: {stock} units."
+            return GetProductStockLevelOutput(stock_level=f"Current stock level for {product_id}: {stock} units.")
         else:
-            return f"Product {product_id} not found or stock information unavailable."
+            return GetProductStockLevelOutput(stock_level=f"Product {product_id} not found or stock information unavailable.")
 
-    @tool
-    def get_customer_outstanding_balance(self, customer_id: str) -> str:
-        """
-        Retrieves the outstanding balance for a given customer ID from the live ERP system.
-        Use this tool when the user asks for a customer's current financial balance or outstanding payments.
-        Input should be the customer ID (e.g., 'CUST001').
-        """
+# Define input and output schemas for GetCustomerOutstandingBalanceTool
+class GetCustomerOutstandingBalanceInput(BaseModel):
+    customer_id: str = Field(description="The ID of the customer (e.g., 'CUST001').")
+
+class GetCustomerOutstandingBalanceOutput(BaseModel):
+    outstanding_balance: str = Field(description="The outstanding balance for the customer.")
+
+class GetCustomerOutstandingBalanceTool:
+    """
+    Retrieves the outstanding balance for a given customer ID from the live ERP system.
+    Use this tool when the user asks for a customer's current financial balance or outstanding payments.
+    """
+    input_schema = GetCustomerOutstandingBalanceInput
+    output_schema = GetCustomerOutstandingBalanceOutput
+
+    def run(self, customer_id: str) -> GetCustomerOutstandingBalanceOutput:
         mock_balance_data = {
             "CUST001": 1250.50,
             "CUST002": 0.00,
@@ -81,27 +123,31 @@ class LiveERP_APITool:
         }
         balance = mock_balance_data.get(customer_id, "N/A")
         if balance != "N/A":
-            return f"Outstanding balance for {customer_id}: ${balance:.2f}."
+            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Outstanding balance for {customer_id}: ${balance:.2f}.")
         else:
-            return f"Customer {customer_id} not found or balance information unavailable."
+            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Customer {customer_id} not found or balance information unavailable.")
 
-class DataAnalysisTool:
-    def __init__(self):
-        pass
+class PerformCalculationInput(BaseModel):
+    expression: str = Field(description="A valid Python expression to evaluate (e.g., '100 * 0.15', 'sum([1, 2, 3])').")
 
-    @tool
-    def perform_calculation(self, expression: str) -> str:
-        """
-        Performs a simple mathematical calculation or evaluates a Python expression.
-        Use this tool when the user asks for calculations or data analysis that can be expressed as a Python expression.
-        Input should be a valid Python expression (e.g., '100 * 0.15', 'sum([1, 2, 3])').
-        Be careful with complex expressions or potential security risks.
-        """
+class PerformCalculationOutput(BaseModel):
+    result: str = Field(description="The result of the calculation.")
+
+class PerformCalculationTool:
+    """
+    Performs a simple mathematical calculation or evaluates a Python expression.
+    Use this tool when the user asks for calculations or data analysis that can be expressed as a Python expression.
+    Be careful with complex expressions or potential security risks.
+    """
+    input_schema = PerformCalculationInput
+    output_schema = PerformCalculationOutput
+
+    def run(self, expression: str) -> PerformCalculationOutput:
         try:
             # WARNING: Evaluating arbitrary expressions can be a security risk.
             # In a production environment, consider using a safer evaluation method
             # or a restricted set of allowed operations.
             result = eval(expression)
-            return f"Result of '{expression}': {result}"
+            return PerformCalculationOutput(result=f"Result of '{expression}': {result}")
         except Exception as e:
-            return f"Error performing calculation '{expression}': {e}"
+            return PerformCalculationOutput(result=f"Error performing calculation '{expression}': {e}")
