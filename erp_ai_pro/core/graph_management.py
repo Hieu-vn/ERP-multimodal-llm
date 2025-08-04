@@ -2,7 +2,13 @@ from langchain.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from neo4j import GraphDatabase
+from neo4j.exceptions import ServiceUnavailable, AuthError
+import logging
 from erp_ai_pro.core.rag_config import RAGConfig
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Define your graph schema (simplified for example)
 GRAPH_SCHEMA = """
@@ -50,15 +56,48 @@ CYPHER_PROMPT = PromptTemplate.from_template(CYPHER_GENERATION_TEMPLATE)
 
 class Neo4jConnection:
     def __init__(self, uri, username, password):
-        self.driver = GraphDatabase.driver(uri, auth=(username, password))
+        try:
+            self.driver = GraphDatabase.driver(uri, auth=(username, password))
+            self.verify_connection()
+            logger.info("Successfully connected to Neo4j.")
+        except AuthError as e:
+            logger.error(f"Neo4j authentication failed: {e}")
+            raise
+        except ServiceUnavailable as e:
+            logger.error(f"Could not connect to Neo4j at {uri}: {e}")
+            raise
 
     def close(self):
-        self.driver.close()
+        if self.driver:
+            self.driver.close()
+            logger.info("Neo4j connection closed.")
+
+    def verify_connection(self):
+        """Verifies the connection to the database by running a simple query."""
+        try:
+            with self.driver.session() as session:
+                session.run("RETURN 1")
+            logger.info("Neo4j connection verified.")
+        except (ServiceUnavailable, AuthError) as e:
+            logger.error(f"Neo4j connection verification failed: {e}")
+            # Optionally, you could try to reconnect here
+            raise
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during query execution: {e}")
+            raise
 
     def query(self, cypher_query: str) -> list[dict]:
-        with self.driver.session() as session:
-            result = session.run(cypher_query)
-            return [record.data() for record in result]
+        try:
+            with self.driver.session() as session:
+                result = session.run(cypher_query)
+                return [record.data() for record in result]
+        except ServiceUnavailable as e:
+            logger.error(f"Neo4j query failed due to connection issue: {e}")
+            # Optionally, you could try to reconnect here
+            raise
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during query execution: {e}")
+            raise
 
 # Initialize Neo4j connection using RAGConfig
 rag_config = RAGConfig()
@@ -76,3 +115,4 @@ def get_cypher_generation_chain(llm):
         | llm.bind(stop=["\nCypher Query:"]) # Stop generation after the query
         | StrOutputParser()
     )
+

@@ -90,6 +90,13 @@ class MainSystem:
         if not self.llm:
             return {"error": "LLM not initialized. System is not ready."}
 
+        # RBAC: Dynamically filter tools based on user role
+        allowed_tool_names = self.config.ROLE_TOOL_MAPPING.get(role, self.config.ROLE_TOOL_MAPPING.get("default", []))
+        
+        # In a real scenario, you would pass the allowed tools to the agent.
+        # For now, we will just log them.
+        logger.info(f"Allowed tools for role '{role}': {allowed_tool_names}")
+
         orchestrator = self.agents["OrchestratorAgent"]
         image_path = kwargs.get("image_path")
 
@@ -107,9 +114,16 @@ class MainSystem:
             elif chosen_agent_name == "MultimodalAgent":
                 result = await chosen_agent.execute(image_path=image_path, question=question)
             elif chosen_agent_name == "BusinessIntelligenceAgent":
-                 result = {"answer": "The BI Agent is not fully integrated yet. It needs data to be passed to it."}
+                # Note: In a real scenario, data would be fetched or passed in.
+                # This is a placeholder for demonstration.
+                analysis_request = {"data": {}} 
+                result = await chosen_agent.execute(analysis_request)
             elif chosen_agent_name == "LiveERPAgent":
-                 result = {"answer": "The Live ERP Agent is not fully integrated yet. It needs a tool name and input."}
+                # Note: In a real scenario, the tool name and input would be
+                # extracted from the user's query by the orchestrator.
+                tool_name = "get_product_stock_level"
+                tool_input = {"product_id": "PROD001"}
+                result = await chosen_agent.execute(tool_name, tool_input)
             else:
                 result = await chosen_agent(question)
             

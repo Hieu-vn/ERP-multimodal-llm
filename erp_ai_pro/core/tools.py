@@ -1,6 +1,14 @@
 from pydantic import BaseModel, Field
 import datetime
 from erp_ai_pro.core.graph_management import neo4j_connection, get_cypher_generation_chain, GRAPH_SCHEMA
+from erp_ai_pro.core.erp_client import ERPClient
+import numexpr as ne
+
+# Initialize the ERP Client
+# In a real app, these would come from a secure config
+ERP_API_BASE_URL = "https://api.example-erp.com/v1"
+ERP_API_KEY = "your_secret_api_key"
+erp_client = ERPClient(base_url=ERP_API_BASE_URL, api_key=ERP_API_KEY)
 
 # Define input and output schemas for GetCurrentDateTool
 class GetCurrentDateInput(BaseModel):
@@ -89,16 +97,11 @@ class GetProductStockLevelTool:
     output_schema = GetProductStockLevelOutput
 
     def run(self, product_id: str) -> GetProductStockLevelOutput:
-        mock_stock_data = {
-            "PROD001": 150,
-            "PROD002": 75,
-            "PROD003": 200,
-        }
-        stock = mock_stock_data.get(product_id, "N/A")
-        if stock != "N/A":
-            return GetProductStockLevelOutput(stock_level=f"Current stock level for {product_id}: {stock} units.")
-        else:
-            return GetProductStockLevelOutput(stock_level=f"Product {product_id} not found or stock information unavailable.")
+        result = erp_client.get_product_stock_level(product_id)
+        if "error" in result:
+            return GetProductStockLevelOutput(stock_level=f"Error retrieving stock for {product_id}: {result['error']}")
+        stock = result.get("stock_level", "N/A")
+        return GetProductStockLevelOutput(stock_level=f"Current stock level for {product_id}: {stock} units.")
 
 # Define input and output schemas for GetCustomerOutstandingBalanceTool
 class GetCustomerOutstandingBalanceInput(BaseModel):
@@ -116,38 +119,31 @@ class GetCustomerOutstandingBalanceTool:
     output_schema = GetCustomerOutstandingBalanceOutput
 
     def run(self, customer_id: str) -> GetCustomerOutstandingBalanceOutput:
-        mock_balance_data = {
-            "CUST001": 1250.50,
-            "CUST002": 0.00,
-            "CUST003": 500.75,
-        }
-        balance = mock_balance_data.get(customer_id, "N/A")
-        if balance != "N/A":
-            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Outstanding balance for {customer_id}: ${balance:.2f}.")
-        else:
-            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Customer {customer_id} not found or balance information unavailable.")
+        result = erp_client.get_customer_outstanding_balance(customer_id)
+        if "error" in result:
+            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Error retrieving balance for {customer_id}: {result['error']}")
+        balance = result.get("outstanding_balance", "N/A")
+        return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Outstanding balance for {customer_id}: ${balance:.2f}.")
 
 class PerformCalculationInput(BaseModel):
-    expression: str = Field(description="A valid Python expression to evaluate (e.g., '100 * 0.15', 'sum([1, 2, 3])').")
+    expression: str = Field(description="A valid mathematical expression to evaluate (e.g., '100 * 0.15', '2**8').")
 
 class PerformCalculationOutput(BaseModel):
     result: str = Field(description="The result of the calculation.")
 
 class PerformCalculationTool:
     """
-    Performs a simple mathematical calculation or evaluates a Python expression.
-    Use this tool when the user asks for calculations or data analysis that can be expressed as a Python expression.
-    Be careful with complex expressions or potential security risks.
+    Performs a safe mathematical calculation.
+    Use this tool when the user asks for calculations.
+    Only supports basic arithmetic, functions, and comparisons.
     """
     input_schema = PerformCalculationInput
     output_schema = PerformCalculationOutput
 
     def run(self, expression: str) -> PerformCalculationOutput:
         try:
-            # WARNING: Evaluating arbitrary expressions can be a security risk.
-            # In a production environment, consider using a safer evaluation method
-            # or a restricted set of allowed operations.
-            result = eval(expression)
+            # Use numexpr for safe evaluation of mathematical expressions
+            result = ne.evaluate(expression)
             return PerformCalculationOutput(result=f"Result of '{expression}': {result}")
         except Exception as e:
-            return PerformCalculationOutput(result=f"Error performing calculation '{expression}': {e}")
+            return PerformCalculationOutput(result=f"Error performing calculation '{expression}': Invalid or unsupported expression. Please use a simple mathematical expression.")

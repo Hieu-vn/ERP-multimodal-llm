@@ -3,7 +3,7 @@
 Configuration for the RAG pipeline.
 """
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -12,7 +12,7 @@ load_dotenv()
 @dataclass
 class RAGConfig:
     # Path to the source knowledge base file
-    knowledge_base_path: str = os.getenv("ERP_KNOWLEDGE_BASE_PATH", "data_preparation/sample_erp_knowledge.json")
+    knowledge_base_path: str = os.getenv("ERP_KNOWLEDGE_BASE_PATH", "erp_ai_pro/data_preparation/sample_erp_knowledge.json")
 
     # Path to the persistent ChromaDB vector store
     vector_store_path: str = os.getenv("VECTOR_STORE_PATH", "data_preparation/vector_store")
@@ -49,7 +49,7 @@ class RAGConfig:
     # Defines which tools are accessible to which user roles.
     # Keys are roles, values are lists of tool names (as strings).
     # If a role is not listed, it will have access to a default set of tools.
-    ROLE_TOOL_MAPPING: dict[str, list[str]] = {
+    ROLE_TOOL_MAPPING: dict[str, list[str]] = field(default_factory=lambda: {
         "admin": [
             "get_current_date", "vector_search", "graph_erp_lookup", "perform_calculation",
             # Full access to all modules
@@ -140,4 +140,4 @@ class RAGConfig:
         "default": [
             "get_current_date", "vector_search"
         ]
-    }
+    })
