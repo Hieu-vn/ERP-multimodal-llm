@@ -1,0 +1,34 @@
+# API & Web Framework
+fastapi
+uvicorn
+pydantic
+python-dotenv
+aiofiles
+
+# Monitoring & Logging
+prometheus-client
+structlog
+
+# Core AI & LLM
+torch
+transformers
+vllm
+langchain
+langchain_community
+
+# Vector Database & Search
+qdrant-client
+sentence-transformers
+chromadb
+
+# Data & Calculation
+numexpr
+redis
+
+# QLoRA Fine-tuning Dependencies
+# Note: These are often installed with specific CUDA versions.
+# bitsandbytes requires a specific installation procedure on Windows.
+# pip install bitsandbytes --prefer-binary --extra-index-url=https://jllllll.github.io/bitsandbytes-windows-webui
+bitsandbytes
+accelerate
+peft

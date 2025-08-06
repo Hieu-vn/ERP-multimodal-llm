@@ -1,4 +1,0 @@
-langchain_community
-numexpr
-sentence-transformers
-chromadb
