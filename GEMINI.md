@@ -12,15 +12,19 @@ Chúng ta sẽ từ bỏ cách làm chắp vá và áp dụng một mô hình ph
 
 ---
 
-## Kiến trúc Hệ thống & Công nghệ
+## Kiến trúc & Công nghệ
+
+### Chiến lược Mô hình Lai (Hybrid Model Strategy)
+Để tối ưu và tối đa hóa hiệu năng, dự án sẽ áp dụng chiến lược "Mô hình Lai", sử dụng đúng model cho đúng vai trò:
+- **"Tổng Quản" AI (OrchestratorAgent):** Sử dụng một model API thương mại hàng đầu (**Gemini 1.5 Pro** hoặc tương đương) để tận dụng khả năng suy luận (reasoning) và gọi hàm (function calling) vượt trội. Model này được "dạy" qua Prompt Engineering, không cần fine-tune.
+- **"Chuyên gia" AI (Specialist Agents):** Sử dụng một model nền mã nguồn mở mạnh mẽ (**Llama 3 8B** hoặc tương đương) làm gốc. Các kỹ năng chuyên môn sẽ được huấn luyện bằng phương pháp **QLoRA (Quantized Low-Rank Adaptation)** để tạo ra các "adapter" nhỏ gọn, hiệu suất cao và tiết kiệm chi phí.
+
+### Công nghệ Nền tảng
 - **Kiến trúc Logic:** Hệ thống Đa Agent Phân cấp 3 lớp.
 - **Framework Backend:** FastAPI.
 - **Ngôn ngữ:** Python.
-- **CSDL:** Neo4j (Graph), Qdrant (Vector).
+- **CSDL:** SQLite (Giao dịch), Neo4j (Graph), Qdrant (Vector).
 - **Framework AI:** LangChain / LlamaIndex.
-- **Model Điều phối:** Gemini Pro/Ultra (hoặc tương đương).
-- **Model Chuyên gia:** Model nền (Llama 3, Mixtral) được fine-tune.
-- **Phương pháp Fine-tune:** **QLoRA (Quantized Low-Rank Adaptation)** để tối ưu hóa bộ nhớ và chi phí.
 - **Hạ tầng:** Docker & Docker Compose.
 
 ### Sơ đồ Kiến trúc Đích

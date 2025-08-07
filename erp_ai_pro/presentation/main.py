@@ -30,9 +30,9 @@ import structlog
 # Import our new main system
 
 
-from erp_ai_pro.core.main_system import MainSystem
-from erp_ai_pro.core.config import SystemConfig
-from erp_ai_pro.core.models import QueryRequest, QueryResponse
+from erp_ai_pro.cognitive.main_system import MainSystem
+from erp_ai_pro.config.config import SystemConfig
+from erp_ai_pro.presentation.models import QueryRequest, QueryResponse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

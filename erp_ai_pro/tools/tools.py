@@ -1,149 +1,113 @@
 from pydantic import BaseModel, Field
 import datetime
-from erp_ai_pro.core.graph_management import neo4j_connection, get_cypher_generation_chain, GRAPH_SCHEMA
-from erp_ai_pro.core.erp_client import ERPClient
+from .graph_management import neo4j_connection, get_cypher_generation_chain, GRAPH_SCHEMA
+from .erp_client import ERPClient
 import numexpr as ne
 
 # Initialize the ERP Client
-# In a real app, these would come from a secure config
-ERP_API_BASE_URL = "https://api.example-erp.com/v1"
-ERP_API_KEY = "your_secret_api_key"
-erp_client = ERPClient(base_url=ERP_API_BASE_URL, api_key=ERP_API_KEY)
+erp_client = ERPClient()
 
-# Define input and output schemas for GetCurrentDateTool
+# --- Base Tool Schemas ---
+
 class GetCurrentDateInput(BaseModel):
     query: str = Field(description="Any string, will be ignored. Use this tool when the user asks for the current date.")
-
-class GetCurrentDateOutput(BaseModel):
-    current_date: str = Field(description="The current date in YYYY-MM-DD format.")
 
 class GetCurrentDateTool:
     """
     Returns the current date. Use this tool when the user asks for the current date.
     """
-    input_schema = GetCurrentDateInput
-    output_schema = GetCurrentDateOutput
+    def run(self, query: str) -> str:
+        return f"Today's date is {datetime.date.today().strftime('%Y-%m-%d')}."
 
-    def run(self, query: str) -> GetCurrentDateOutput:
-        return GetCurrentDateOutput(current_date=datetime.date.today().strftime("%Y-%m-%d"))
+# --- Task Management Tools ---
 
-class GraphERPLookupInput(BaseModel):
-    question: str = Field(description="The natural language question about entities, relationships, or specific data points in the ERP.")
-    role: str = Field(description="The user's role in the ERP system.")
+class CreateTaskInput(BaseModel):
+    title: str = Field(description="The title of the task.")
+    description: str = Field(description="A detailed description of the task.")
+    assignee_id: str = Field(description="The ID of the user to whom the task is assigned.")
 
-class GraphERPLookupOutput(BaseModel):
-    result: str = Field(description="The result of the Cypher query execution.")
+class CreateTaskTool:
+    """
+    Creates a new task with a title, description, and assigns it to a user.
+    Use this when a user wants to create or assign a new task.
+    """
+    def run(self, title: str, description: str, assignee_id: str, reporter_id: str = "system") -> str:
+        # In a real system, reporter_id would come from the authenticated user
+        result = erp_client.create_task(title, description, assignee_id, reporter_id)
+        if "error" in result:
+            return f"Error creating task: {result['error']}"
+        return f"Successfully created task '{result['task_id']}: {result['title']}' and assigned it to {result['assignee_id']}."
+
+class GetTasksByAssigneeInput(BaseModel):
+    assignee_id: str = Field(description="The ID of the user whose tasks are to be retrieved.")
+
+class GetTasksByAssigneeTool:
+    """
+    Retrieves a list of all tasks assigned to a specific user.
+    Use this when a user asks to see their tasks or someone else's tasks.
+    """
+    def run(self, assignee_id: str) -> str:
+        tasks = erp_client.get_tasks_by_assignee(assignee_id)
+        if not tasks:
+            return f"No tasks found for user '{assignee_id}'."
+        
+        task_list_str = "\n".join([f"- {t['task_id']}: {t['title']} (Project: {t.get('project_id', 'N/A')}, Status: {t['status']})") for t in tasks])
+        return f"Tasks for {assignee_id}:\n{task_list_str}"
+
+class GetTasksByProjectInput(BaseModel):
+    project_id: str = Field(description="The ID of the project whose tasks are to be retrieved.")
+
+class GetTasksByProjectTool:
+    """
+    Retrieves a list of all tasks for a specific project.
+    Use this when a user asks for all tasks related to a project.
+    """
+    def run(self, project_id: str) -> str:
+        tasks = erp_client.get_tasks_by_project(project_id)
+        if not tasks:
+            return f"No tasks found for project '{project_id}'."
+        
+        task_list_str = "\n".join([f"- {t['task_id']}: {t['title']} (Assignee: {t['assignee_id']}, Status: {t['status']})") for t in tasks])
+        return f"Tasks for project {project_id}:\n{task_list_str}"
+
+class UpdateTaskStatusInput(BaseModel):
+    task_id: str = Field(description="The ID of the task to update (e.g., 'T-1').")
+    new_status: str = Field(description="The new status for the task (e.g., 'Đang làm', 'Hoàn thành').")
+
+class UpdateTaskStatusTool:
+    """
+    Updates the status of a specific task.
+    Use this when a user wants to change the state of a task.
+    """
+    def run(self, task_id: str, new_status: str) -> str:
+        result = erp_client.update_task_status(task_id, new_status)
+        if "error" in result:
+            return f"Error updating task {task_id}: {result['error']}"
+        return f"Successfully updated status for task {task_id} to '{new_status}'."
+
+# --- Other Tools (Placeholder) ---
 
 class GraphERPLookupTool:
     """
-    Generates and executes a Cypher query against the ERP Knowledge Graph based on the user's question and role.
-    Use this for questions about entities, relationships, and specific data points in the ERP.
+    (Placeholder) Generates and executes a Cypher query against the ERP Knowledge Graph.
     """
-    input_schema = GraphERPLookupInput
-    output_schema = GraphERPLookupOutput
-
-    def __init__(self, llm_model):
-        self.llm_model = llm_model
-
-    def run(self, question: str, role: str) -> GraphERPLookupOutput:
-        try:
-            # Generate Cypher query using LLM
-            cypher_chain = get_cypher_generation_chain(self.llm_model)
-            generated_cypher = cypher_chain.invoke({"question": question, "role": role})
-            print(f"Generated Cypher: {generated_cypher}")
-
-            # Execute the generated Cypher query
-            result = neo4j_connection.query(generated_cypher)
-            return GraphERPLookupOutput(result=str(result))
-        except Exception as e:
-            return GraphERPLookupOutput(result=f"Error in graph lookup: {e}")
-
-class VectorSearchInput(BaseModel):
-    query: str = Field(description="A clear question to search for relevant documents.")
-    role: str = Field(description="The user's role in the ERP system.")
-
-class VectorSearchOutput(BaseModel):
-    documents: str = Field(description="The concatenated content of relevant documents retrieved from the knowledge base.")
+    def run(self, question: str, role: str) -> str:
+        return "GraphERPLookupTool is not yet implemented."
 
 class VectorSearchTool:
     """
-    Searches the knowledge base for relevant documents based on the user's query and role.
-    Use this tool for general questions, procedural inquiries, or policy lookups.
+    (Placeholder) Searches the knowledge base for relevant documents.
     """
-    input_schema = VectorSearchInput
-    output_schema = VectorSearchOutput
-
-    def __init__(self, vector_store, retrieval_k):
-        self.vector_store = vector_store
-        self.retrieval_k = retrieval_k
-
-    def run(self, query: str, role: str) -> VectorSearchOutput:
-        retriever = self.vector_store.as_retriever(search_kwargs={'k': self.retrieval_k, 'filter': {'role': role}})
-        docs = retriever.get_relevant_documents(query)
-        return VectorSearchOutput(documents="\n\n".join([doc.page_content for doc in docs]))
-
-class GetProductStockLevelInput(BaseModel):
-    product_id: str = Field(description="The ID of the product (e.g., 'PROD001').")
-
-class GetProductStockLevelOutput(BaseModel):
-    stock_level: str = Field(description="The current stock level for the product.")
-
-class GetProductStockLevelTool:
-    """
-    Retrieves the current stock level for a given product ID from the live ERP system.
-    Use this tool when the user asks for real-time stock information for a specific product.
-    """
-    input_schema = GetProductStockLevelInput
-    output_schema = GetProductStockLevelOutput
-
-    def run(self, product_id: str) -> GetProductStockLevelOutput:
-        result = erp_client.get_product_stock_level(product_id)
-        if "error" in result:
-            return GetProductStockLevelOutput(stock_level=f"Error retrieving stock for {product_id}: {result['error']}")
-        stock = result.get("stock_level", "N/A")
-        return GetProductStockLevelOutput(stock_level=f"Current stock level for {product_id}: {stock} units.")
-
-# Define input and output schemas for GetCustomerOutstandingBalanceTool
-class GetCustomerOutstandingBalanceInput(BaseModel):
-    customer_id: str = Field(description="The ID of the customer (e.g., 'CUST001').")
-
-class GetCustomerOutstandingBalanceOutput(BaseModel):
-    outstanding_balance: str = Field(description="The outstanding balance for the customer.")
-
-class GetCustomerOutstandingBalanceTool:
-    """
-    Retrieves the outstanding balance for a given customer ID from the live ERP system.
-    Use this tool when the user asks for a customer's current financial balance or outstanding payments.
-    """
-    input_schema = GetCustomerOutstandingBalanceInput
-    output_schema = GetCustomerOutstandingBalanceOutput
-
-    def run(self, customer_id: str) -> GetCustomerOutstandingBalanceOutput:
-        result = erp_client.get_customer_outstanding_balance(customer_id)
-        if "error" in result:
-            return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Error retrieving balance for {customer_id}: {result['error']}")
-        balance = result.get("outstanding_balance", "N/A")
-        return GetCustomerOutstandingBalanceOutput(outstanding_balance=f"Outstanding balance for {customer_id}: ${balance:.2f}.")
-
-class PerformCalculationInput(BaseModel):
-    expression: str = Field(description="A valid mathematical expression to evaluate (e.g., '100 * 0.15', '2**8').")
-
-class PerformCalculationOutput(BaseModel):
-    result: str = Field(description="The result of the calculation.")
+    def run(self, query: str, role: str) -> str:
+        return "VectorSearchTool is not yet implemented."
 
 class PerformCalculationTool:
     """
     Performs a safe mathematical calculation.
-    Use this tool when the user asks for calculations.
-    Only supports basic arithmetic, functions, and comparisons.
     """
-    input_schema = PerformCalculationInput
-    output_schema = PerformCalculationOutput
-
-    def run(self, expression: str) -> PerformCalculationOutput:
+    def run(self, expression: str) -> str:
         try:
-            # Use numexpr for safe evaluation of mathematical expressions
             result = ne.evaluate(expression)
-            return PerformCalculationOutput(result=f"Result of '{expression}': {result}")
+            return f"Result of '{expression}': {result}"
         except Exception as e:
-            return PerformCalculationOutput(result=f"Error performing calculation '{expression}': Invalid or unsupported expression. Please use a simple mathematical expression.")
+            return f"Error performing calculation '{expression}': Invalid expression."
